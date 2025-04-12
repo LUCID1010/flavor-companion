@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Utensils, MapPin, Star, Clock } from 'lucide-react';
@@ -6,6 +5,7 @@ import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import SearchBar from '@/components/ui/SearchBar';
 import RestaurantCard from '@/components/ui/RestaurantCard';
+import ApiDemo from '@/components/ApiDemo';
 import { mockRestaurants, mockUsers } from '@/utils/mockData';
 
 const Index: React.FC = () => {
@@ -80,6 +80,29 @@ const Index: React.FC = () => {
         </div>
         
         <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-white to-transparent" />
+      </section>
+      
+      {/* API Demo Section */}
+      <section className="py-16 bg-white">
+        <div className="foodie-container">
+          <div className="mb-10">
+            <span className="mb-2 inline-block rounded-full bg-foodie-100 px-3 py-1 text-sm font-medium text-foodie-800">
+              API Integration
+            </span>
+            <h2 className="text-2xl font-semibold text-gray-900 sm:text-3xl">
+              Worldwide Restaurants API
+            </h2>
+          </div>
+          
+          <ApiDemo />
+          
+          <div className="mt-8 text-center">
+            <p className="text-gray-600 mb-4">
+              Note: You need to add your RapidAPI key to start using the API. 
+              Edit the key in src/services/restaurantApi.ts
+            </p>
+          </div>
+        </div>
       </section>
       
       {/* Featured Restaurants */}
