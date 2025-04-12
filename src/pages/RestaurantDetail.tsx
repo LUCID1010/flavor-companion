@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Heart, MapPin, Clock, Phone, Globe, Star, ChevronRight, ChevronLeft, Share2, ThumbsUp } from 'lucide-react';
+import { Heart, MapPin, Clock, Phone, Globe, Star, ChevronRight, ChevronLeft, Share2, ThumbsUp, X } from 'lucide-react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import RatingStars from '@/components/ui/RatingStars';
