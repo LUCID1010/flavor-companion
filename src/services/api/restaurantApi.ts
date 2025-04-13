@@ -1,5 +1,6 @@
+
 import { toast } from "sonner";
-import { Restaurant, FilterOptions, SortOption } from "@/types";
+import { Restaurant, FilterOptions, SortOption, CuisineType, PriceRange } from "@/types";
 import { mockRestaurants } from "@/utils/mockData";
 import { importRestaurants } from "@/utils/importRestaurantData";
 

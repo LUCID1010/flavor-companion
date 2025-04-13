@@ -2,200 +2,252 @@ import { Restaurant, PriceRange, CuisineType } from '@/types';
 
 // This is a utility to convert the data from the CSV-like format in the image to Restaurant objects
 export const importRestaurants = (): Restaurant[] => {
-  // This would normally be imported from a CSV file or API
-  // For this demo, we'll hardcode some of the data from the image and add more Indian restaurants
+  // Mock restaurant data (replace with actual data source)
   const restaurantData = [
     {
-      id: "3400299",
-      name: "Bikanerva",
-      category: "Quick Bites",
-      url: "https://www.example.com/bikanerva",
-      address: "Kalyanpur",
-      city: "Agra",
-      locality: "Khandari",
-      latitude: 27.2115,
-      longitude: 78.0024,
-      zipCode: "282001",
-      cuisines: ["North Indian", "Rajasthani"],
-      timings: "8:30am to 10:30pm",
-      price: 700,
-      rating: 4.4,
-      reviewCount: 814,
-      features: ["Lunch", "Dinner", "Pure Veg"]
-    },
-    {
-      id: "3400005",
-      name: "Mama Chicken",
-      category: "Quick Bites",
-      url: "https://www.example.com/mama-chicken",
-      address: "Mardulla",
-      city: "Agra",
-      locality: "Agra Cantt",
-      latitude: 27.1606,
-      longitude: 78.0166,
-      zipCode: "282001",
-      cuisines: ["North Indian", "Mughlai"],
-      timings: "11:00am to 11:00pm",
-      price: 600,
-      rating: 4.4,
-      reviewCount: 1203,
-      features: ["Delivery", "Takeout"]
-    },
-    {
-      id: "3401013",
-      name: "Bhagat Halwai",
-      category: "Quick Bites",
-      url: "https://www.example.com/bhagat-halwai",
-      address: "Sector 2",
-      city: "Agra",
-      locality: "Shahganj",
-      latitude: 27.1829,
-      longitude: 77.9797,
-      zipCode: "282010",
-      cuisines: ["Street Food", "Sweets"],
-      timings: "9:30 AM to 10:00 PM",
-      price: 300,
-      rating: 4.2,
-      reviewCount: 801,
-      features: ["Takeaway", "Pure Veg", "Jain Options"]
-    },
-    {
-      id: "3400290",
-      name: "Bhagat Anand",
-      category: "Quick Bites",
-      url: "https://www.example.com/bhagat-anand",
-      address: "Anda Point",
-      city: "Agra",
-      locality: "Civil Lines",
-      latitude: 27.2057,
-      longitude: 78.0057,
-      zipCode: "282002",
-      cuisines: ["Desserts", "Sweets", "South Indian"],
-      timings: "8am to 10pm",
-      price: 300,
-      rating: 4.3,
-      reviewCount: 693,
-      features: ["Takeaway", "Pure Veg"]
-    },
-    {
-      id: "3401744",
-      name: "The Salt Cafe",
-      category: "Casual Dining",
-      url: "https://www.example.com/salt-cafe",
-      address: "3rd Floor",
-      city: "Agra",
-      locality: "Tajganj",
-      latitude: 27.1577,
-      longitude: 78.0524,
-      zipCode: "282001",
-      cuisines: ["North Indian", "Fusion"],
-      timings: "11:30 AM to 11:00 PM",
-      price: 1000,
-      rating: 4.9,
-      reviewCount: 470,
-      features: ["Lunch", "Dinner", "Excellent Service", "Air Conditioned"]
-    },
-    // Adding more Indian restaurants
-    {
-      id: "3401999",
-      name: "Spice Paradise",
-      category: "Fine Dining",
-      url: "https://www.example.com/spice-paradise",
-      address: "MG Road",
-      city: "Agra",
-      locality: "Civil Lines",
-      latitude: 27.1987,
-      longitude: 78.0193,
-      zipCode: "282002",
-      cuisines: ["North Indian", "Mughlai", "Punjabi"],
-      timings: "12:00 PM to 11:00 PM",
-      price: 1200,
-      rating: 4.7,
-      reviewCount: 562,
-      features: ["Fine Dining", "Live Music", "Rooftop", "Air Conditioned"]
-    },
-    {
-      id: "3402001",
-      name: "Dosa Palace",
-      category: "Quick Bites",
-      url: "https://www.example.com/dosa-palace",
-      address: "Sadar Bazaar",
-      city: "Agra",
-      locality: "Agra Cantt",
-      latitude: 27.1670,
-      longitude: 78.0155,
-      zipCode: "282001",
-      cuisines: ["South Indian", "Kerala", "Andhra"],
-      timings: "7:00 AM to 10:30 PM",
-      price: 450,
+      id: "ir1",
+      name: "Amma Chettinad Mess",
+      category: "Dine-in Restaurant",
+      cuisines: ["Chettinad", "South Indian"],
       rating: 4.5,
-      reviewCount: 891,
-      features: ["Breakfast", "Pure Veg", "Jain Options", "Takeaway"]
+      locality: "Little India",
+      city: "Singapore",
+      state: "Central Singapore",
+      zipCode: "209070",
+      latitude: 1.3075,
+      longitude: 103.8445,
+      address: "58 Race Course Rd, Singapore 218565",
+      phone: "+65 6298 2855",
+      website: "https://www.example.com",
+      image: "https://lh3.googleusercontent.com/places/ANmVG8WJmxUs9tK9J-QJPEtgQe-gY6nkhQjnmOXmJ9F3dB-wCSj3QHwZEj-ks9IZv4t2aP996R9jjpn-K9mYmJ9F3dB-wCSj3QHwZEj-ks9IZv4t2aP996R9jjpn-K9mY=s1600-w400",
+      "opening hours": "11 AM - 10 PM"
     },
     {
-      id: "3402002",
-      name: "Mumbai Chaat Corner",
-      category: "Street Food",
-      url: "https://www.example.com/mumbai-chaat",
-      address: "Raja Ki Mandi",
-      city: "Agra",
-      locality: "Raja Mandi",
-      latitude: 27.1882,
-      longitude: 78.0145,
-      zipCode: "282002",
-      cuisines: ["Street Food", "Maharashtrian", "Sweets"],
-      timings: "10:00 AM to 9:00 PM",
-      price: 200,
-      rating: 4.4,
-      reviewCount: 1205,
-      features: ["Takeaway", "Pure Veg"]
+      id: "ir2",
+      name: "Anjappar Chettinad Restaurant",
+      category: "Dine-in Restaurant",
+      cuisines: ["Chettinad", "Indian"],
+      rating: 4.0,
+      locality: "Little India",
+      city: "Singapore",
+      state: "Central Singapore",
+      zipCode: "208702",
+      latitude: 1.3085,
+      longitude: 103.8435,
+      address: "76 Race Course Rd, Singapore 218575",
+      phone: "+65 6296 0757",
+      website: "https://www.example.com",
+      image: "https://lh3.googleusercontent.com/places/ANmVG8WJmxUs9tK9J-QJPEtgQe-gY6nkhQjnmOXmJ9F3dB-wCSj3QHwZEj-ks9IZv4t2aP996R9jjpn-K9mYmJ9F3dB-wCSj3QHwZEj-ks9IZv4t2aP996R9jjpn-K9mY=s1600-w400",
+      "opening hours": "11 AM - 11 PM"
     },
     {
-      id: "3402003",
-      name: "Punjab Da Dhaba",
-      category: "Casual Dining",
-      url: "https://www.example.com/punjab-da-dhaba",
-      address: "Kamla Nagar",
-      city: "Agra",
-      locality: "Kamla Nagar",
-      latitude: 27.2020,
-      longitude: 78.0085,
-      zipCode: "282005",
-      cuisines: ["Punjabi", "North Indian"],
-      timings: "11:00 AM to 11:00 PM",
-      price: 700,
+      id: "ir3",
+      name: " ছোট রেস্টুরেন্ট (Chotto Restaurant)",
+      category: "Dine-in Restaurant",
+      cuisines: ["Bengali", "Indian"],
+      rating: 3.5,
+      locality: "Little India",
+      city: "Singapore",
+      state: "Central Singapore",
+      zipCode: "208702",
+      latitude: 1.3095,
+      longitude: 103.8425,
+      address: "81Desker Rd, Singapore 209603",
+      phone: "+65 8768 5247",
+      website: "https://www.example.com",
+      image: "https://lh3.googleusercontent.com/places/ANmVG8WJmxUs9tK9J-QJPEtgQe-gY6nkhQjnmOXmJ9F3dB-wCSj3QHwZEj-ks9IZv4t2aP996R9jjpn-K9mYmJ9F3dB-wCSj3QHwZEj-ks9IZv4t2aP996R9jjpn-K9mY=s1600-w400",
+      "opening hours": "24 hours"
+    },
+    {
+      id: "ir4",
+      name: "Komala Vilas Restaurant",
+      category: "Dine-in Restaurant",
+      cuisines: ["South Indian", "Indian"],
+      rating: 4.2,
+      locality: "Little India",
+      city: "Singapore",
+      state: "Central Singapore",
+      zipCode: "217744",
+      latitude: 1.3070,
+      longitude: 103.8455,
+      address: "76-78 Serangoon Rd, Singapore 217981",
+      phone: "+65 6293 6980",
+      website: "https://www.komalavilas.com.sg/",
+      image: "https://lh3.googleusercontent.com/places/ANmVG8WJmxUs9tK9J-QJPEtgQe-gY6nkhQjnmOXmJ9F3dB-wCSj3QHwZEj-ks9IZv4t2aP996R9jjpn-K9mYmJ9F3dB-wCSj3QHwZEj-ks9IZv4t2aP996R9jjpn-K9mY=s1600-w400",
+      "opening hours": "7:30AM - 10:30PM"
+    },
+    {
+      id: "ir5",
+      name: "MTR Singapore",
+      category: "Dine-in Restaurant",
+      cuisines: ["South Indian", "Indian"],
       rating: 4.3,
-      reviewCount: 753,
-      features: ["Dhaba Style", "Family Friendly", "Buffet"]
+      locality: "Little India",
+      city: "Singapore",
+      state: "Central Singapore",
+      zipCode: "217972",
+      latitude: 1.3065,
+      longitude: 103.8465,
+      address: "438 Serangoon Rd, Singapore 218134",
+      phone: "+65 6296 5800",
+      website: "http://www.mtrsingapore.com/",
+      image: "https://lh3.googleusercontent.com/places/ANmVG8WJmxUs9tK9J-QJPEtgQe-gY6nkhQjnmOXmJ9F3dB-wCSj3QHwZEj-ks9IZv4t2aP996R9jjpn-K9mYmJ9F3dB-wCSj3QHwZEj-ks9IZv4t2aP996R9jjpn-K9mY=s1600-w400",
+      "opening hours": "8:30AM - 3PM, 5:30–9:30PM"
     },
     {
-      id: "3402004",
-      name: "Mysore Masala",
-      category: "Fine Dining",
-      url: "https://www.example.com/mysore-masala",
-      address: "Sanjay Place",
-      city: "Agra",
-      locality: "Sanjay Place",
-      latitude: 27.2011,
-      longitude: 78.0082,
-      zipCode: "282002",
-      cuisines: ["South Indian", "Karnataka", "Kerala"],
-      timings: "8:00 AM to 10:30 PM",
-      price: 800,
-      rating: 4.6,
-      reviewCount: 612,
-      features: ["Breakfast", "Lunch", "Dinner", "Air Conditioned"]
-    }
+      id: "ir6",
+      name: "Mustafa Cafe",
+      category: "Dine-in Restaurant",
+      cuisines: ["Indian", "Halal"],
+      rating: 3.8,
+      locality: "Little India",
+      city: "Singapore",
+      state: "Central Singapore",
+      zipCode: "208533",
+      latitude: 1.3055,
+      longitude: 103.8475,
+      address: "145 Syed Alwi Rd, Singapore 207704",
+      phone: "+65 6295 5822",
+      website: "https://www.mustafa.com.sg/",
+      image: "https://lh3.googleusercontent.com/places/ANmVG8WJmxUs9tK9J-QJPEtgQe-gY6nkhQjnmOXmJ9F3dB-wCSj3QHwZEj-ks9IZv4t2aP996R9jjpn-K9mYmJ9F3dB-wCSj3QHwZEj-ks9IZv4t2aP996R9jjpn-K9mY=s1600-w400",
+      "opening hours": "24 hours"
+    },
+    {
+      id: "ir7",
+      name: " ছোট রেস্টুরেন্ট (Chotto Restaurant)",
+      category: "Dine-in Restaurant",
+      cuisines: ["Bengali", "Indian"],
+      rating: 3.5,
+      locality: "Little India",
+      city: "Singapore",
+      state: "Central Singapore",
+      zipCode: "208702",
+      latitude: 1.3095,
+      longitude: 103.8425,
+      address: "81Desker Rd, Singapore 209603",
+      phone: "+65 8768 5247",
+      website: "https://www.example.com",
+      image: "https://lh3.googleusercontent.com/places/ANmVG8WJmxUs9tK9J-QJPEtgQe-gY6nkhQjnmOXmJ9F3dB-wCSj3QHwZEj-ks9IZv4t2aP996R9jjpn-K9mYmJ9F3dB-wCSj3QHwZEj-ks9IZv4t2aP996R9jjpn-K9mY=s1600-w400",
+      "opening hours": "24 hours"
+    },
+    {
+      id: "ir8",
+      name: " ছোট রেস্টুরেন্ট (Chotto Restaurant)",
+      category: "Dine-in Restaurant",
+      cuisines: ["Bengali", "Indian"],
+      rating: 3.5,
+      locality: "Little India",
+      city: "Singapore",
+      state: "Central Singapore",
+      zipCode: "208702",
+      latitude: 1.3095,
+      longitude: 103.8425,
+      address: "81Desker Rd, Singapore 209603",
+      phone: "+65 8768 5247",
+      website: "https://www.example.com",
+      image: "https://lh3.googleusercontent.com/places/ANmVG8WJmxUs9tK9J-QJPEtgQe-gY6nkhQjnmOXmJ9F3dB-wCSj3QHwZEj-ks9IZv4t2aP996R9jjpn-K9mYmJ9F3dB-wCSj3QHwZEj-ks9IZv4t2aP996R9jjpn-K9mY=s1600-w400",
+      "opening hours": "24 hours"
+    },
+    {
+      id: "ir9",
+      name: " ছোট রেস্টুরেন্ট (Chotto Restaurant)",
+      category: "Dine-in Restaurant",
+      cuisines: ["Bengali", "Indian"],
+      rating: 3.5,
+      locality: "Little India",
+      city: "Singapore",
+      state: "Central Singapore",
+      zipCode: "208702",
+      latitude: 1.3095,
+      longitude: 103.8425,
+      address: "81Desker Rd, Singapore 209603",
+      phone: "+65 8768 5247",
+      website: "https://www.example.com",
+      image: "https://lh3.googleusercontent.com/places/ANmVG8WJmxUs9tK9J-QJPEtgQe-gY6nkhQjnmOXmJ9F3dB-wCSj3QHwZEj-ks9IZv4t2aP996R9jjpn-K9mYmJ9F3dB-wCSj3QHwZEj-ks9IZv4t2aP996R9jjpn-K9mY=s1600-w400",
+      "opening hours": "24 hours"
+    },
+    {
+      id: "ir10",
+      name: " ছোট রেস্টুরেন্ট (Chotto Restaurant)",
+      category: "Dine-in Restaurant",
+      cuisines: ["Bengali", "Indian"],
+      rating: 3.5,
+      locality: "Little India",
+      city: "Singapore",
+      state: "Central Singapore",
+      zipCode: "208702",
+      latitude: 1.3095,
+      longitude: 103.8425,
+      address: "81Desker Rd, Singapore 209603",
+      phone: "+65 8768 5247",
+      website: "https://www.example.com",
+      image: "https://lh3.googleusercontent.com/places/ANmVG8WJmxUs9tK9J-QJPEtgQe-gY6nkhQjnmOXmJ9F3dB-wCSj3QHwZEj-ks9IZv4t2aP996R9jjpn-K9mYmJ9F3dB-wCSj3QHwZEj-ks9IZv4t2aP996R9jjpn-K9mY=s1600-w400",
+      "opening hours": "24 hours"
+    },
   ];
+
+  const generateRandomPhotos = (): string[] => {
+    const photoUrls = [
+      "https://images.unsplash.com/photo-1517248135469-d3d51ca46168?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80",
+      "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80",
+      "https://images.unsplash.com/photo-1504674900247-0877df9cc836?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80",
+      "https://images.unsplash.com/photo-1467003954586-28a0e5d977a6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80",
+      "https://images.unsplash.com/photo-1565958011703-44f9829ba187?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80",
+      "https://images.unsplash.com/photo-1551782450-a2132b4ba212?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80",
+    ];
   
-  // Convert to Restaurant objects
+    const shuffled = [...photoUrls].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, 3);
+  };
+
+  const generateMenuItems = (cuisines: string[]): any[] => {
+    const menuItems = [];
+    cuisines.forEach(cuisine => {
+      menuItems.push({
+        id: `menu-${cuisine}-1`,
+        name: `Sample ${cuisine} Dish 1`,
+        description: `Delicious sample ${cuisine} dish`,
+        price: 15,
+        category: "Main Course",
+      });
+      menuItems.push({
+        id: `menu-${cuisine}-2`,
+        name: `Sample ${cuisine} Dish 2`,
+        description: `Another delicious sample ${cuisine} dish`,
+        price: 12,
+        category: "Appetizer",
+      });
+    });
+    return menuItems;
+  };
+
+  const generateFeatures = (category: string): string[] => {
+    const features = ["Free Wifi", "Family Friendly", "Takeout"];
+    if (category.toLowerCase().includes("restaurant")) {
+      features.push("Dine-In");
+    }
+    return features;
+  };
+
+  const convertOpeningHours = (openingHours: string): { [key: string]: { open: string; close: string } } => {
+    // Implement logic to convert the opening hours string to the desired format
+    // This is a placeholder, replace with actual conversion logic
+    return {
+      Monday: { open: "11:00", close: "22:00" },
+      Tuesday: { open: "11:00", close: "22:00" },
+      Wednesday: { open: "11:00", close: "22:00" },
+      Thursday: { open: "11:00", close: "22:00" },
+      Friday: { open: "11:00", close: "23:00" },
+      Saturday: { open: "10:00", close: "23:00" },
+      Sunday: { open: "10:00", close: "21:00" }
+    };
+  };
+
+  // Convert each restaurant data item to a Restaurant object
   return restaurantData.map(data => {
-    // Calculate price range based on price
-    let priceRange: PriceRange = '$';
-    if (data.price > 800) priceRange = '$$$$';
-    else if (data.price > 600) priceRange = '$$$';
-    else if (data.price > 400) priceRange = '$$';
-    
+    const hours = convertOpeningHours(data["opening hours"]);
+    const priceRange = "$$"; // You might want to implement logic to determine price range based on data
+
     return {
       id: data.id,
       name: data.name,
@@ -204,88 +256,25 @@ export const importRestaurants = (): Restaurant[] => {
       priceRange,
       address: data.address,
       city: data.city,
-      state: "Uttar Pradesh",
+      state: data.state,
       zipCode: data.zipCode,
       location: {
         lat: data.latitude,
-        lng: data.longitude,
+        lng: data.longitude
       },
-      phone: "+91 " + Math.floor(6000000000 + Math.random() * 3999999999), // Random Indian mobile number
-      website: data.url,
-      hours: {
-        Monday: { open: "10:00 AM", close: "10:00 PM" },
-        Tuesday: { open: "10:00 AM", close: "10:00 PM" },
-        Wednesday: { open: "10:00 AM", close: "10:00 PM" },
-        Thursday: { open: "10:00 AM", close: "10:00 PM" },
-        Friday: { open: "10:00 AM", close: "11:00 PM" },
-        Saturday: { open: "10:00 AM", close: "11:00 PM" },
-        Sunday: { open: "10:00 AM", close: "10:00 PM" },
-      },
-      photos: [
-        `https://source.unsplash.com/featured/?indian,${data.cuisines[0].toLowerCase().replace(' ', '')}`,
-        `https://source.unsplash.com/featured/?food,${data.cuisines[0].toLowerCase().replace(' ', '')}`,
-        `https://source.unsplash.com/featured/?restaurant,${data.name.toLowerCase().replace(' ', '')}`
-      ],
+      phone: data.phone,
+      website: data.website || "",
+      hours,
+      photos: [data.image, ...generateRandomPhotos()].filter(Boolean),
       rating: data.rating,
-      reviewCount: data.reviewCount,
-      menuItems: generateMenuItems(data),
-      features: data.features,
+      reviewCount: Math.floor(Math.random() * 100) + 10,
+      menuItems: generateMenuItems(data.cuisines),
+      features: generateFeatures(data.category),
     };
   });
 };
 
-// Helper function to generate menu items based on cuisine type
-function generateMenuItems(data: any) {
-  const menuItems = [];
-  const cuisines = data.cuisines;
-  
-  // Generate 3-5 menu items based on the restaurant's cuisines
-  const itemCount = 3 + Math.floor(Math.random() * 3);
-  
-  for (let i = 0; i < itemCount; i++) {
-    const cuisine = cuisines[i % cuisines.length];
-    
-    let name = "";
-    let description = "";
-    
-    // Set name and description based on cuisine
-    if (cuisine === "North Indian") {
-      const dishes = ["Butter Chicken", "Paneer Tikka", "Dal Makhani", "Chole Bhature", "Tandoori Roti", "Naan"];
-      name = dishes[i % dishes.length];
-      description = `A delicious ${cuisine} specialty that everyone loves`;
-    } else if (cuisine === "South Indian") {
-      const dishes = ["Masala Dosa", "Idli Sambhar", "Vada", "Uttapam", "Rava Dosa", "Pongal"];
-      name = dishes[i % dishes.length];
-      description = `Authentic ${cuisine} delight served with chutney and sambhar`;
-    } else if (cuisine === "Street Food") {
-      const dishes = ["Pani Puri", "Bhel Puri", "Vada Pav", "Pav Bhaji", "Aloo Tikki", "Samosa Chaat"];
-      name = dishes[i % dishes.length];
-      description = `Popular street food item that will tantalize your taste buds`;
-    } else if (cuisine === "Sweets") {
-      const dishes = ["Gulab Jamun", "Rasgulla", "Jalebi", "Rasmalai", "Kaju Katli", "Gajar Ka Halwa"];
-      name = dishes[i % dishes.length];
-      description = `Sweet delicacy that's perfect for dessert or celebrations`;
-    } else {
-      name = `${cuisine} Special Dish ${i+1}`;
-      description = `A delicious ${cuisine} specialty`;
-    }
-    
-    menuItems.push({
-      id: `${data.id}-${i+1}`,
-      name,
-      description,
-      price: Math.round(data.price / (3 + i)),
-      category: i === 0 ? "Specialties" : i < 3 ? "Mains" : "Sides",
-      popular: i < 2,
-    });
-  }
-  
-  return menuItems;
-}
-
-// Add the imported restaurants to the mock data
-export const importRestaurantsToMockData = () => {
-  // This would normally update the database
-  // For this demo, we'll just return the imported restaurants
-  return importRestaurants();
+// Helper function to generate random number of photos
+const generateRandomNumber = (limit: number): number => {
+  return Math.floor(Math.random() * limit) + 1;
 };

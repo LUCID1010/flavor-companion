@@ -1,5 +1,4 @@
-
-import { Restaurant, Review, User } from '@/types';
+import { Restaurant, Review, User, CuisineType, PriceRange } from '@/types';
 
 export const mockRestaurants: Restaurant[] = [
   {
@@ -512,8 +511,8 @@ export const getUserById = (id: string): User | undefined => {
 
 export const filterRestaurants = (
   query: string = "", 
-  cuisines: string[] = [], 
-  prices: string[] = [], 
+  cuisines: CuisineType[] = [], 
+  prices: PriceRange[] = [], 
   features: string[] = [],
   openNow: boolean = false
 ): Restaurant[] => {

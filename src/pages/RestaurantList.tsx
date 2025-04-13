@@ -22,7 +22,6 @@ const RestaurantList: React.FC = () => {
   const [filteredRestaurants, setFilteredRestaurants] = useState<Restaurant[]>([]);
   const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
 
-  // Create a filters state to pass to FilterPanel
   const [filters, setFilters] = useState<FilterOptions>({
     cuisine: [],
     price: [],
@@ -32,13 +31,10 @@ const RestaurantList: React.FC = () => {
   
   const [sortBy, setSortBy] = useState('relevance');
   
-  // Load restaurants on mount
   useEffect(() => {
-    // Combine mock and imported restaurants
     const importedRestaurants = importRestaurants();
     const allRestaurants = [...mockRestaurants, ...importedRestaurants];
     
-    // Remove duplicates if any (based on ID)
     const uniqueRestaurants = allRestaurants.reduce((acc, current) => {
       const x = acc.find(item => item.id === current.id);
       if (!x) {
@@ -51,7 +47,6 @@ const RestaurantList: React.FC = () => {
     setRestaurants(uniqueRestaurants);
     setFilteredRestaurants(uniqueRestaurants);
     
-    // Check for query params
     const cuisineParam = searchParams.get('cuisine');
     if (cuisineParam) {
       setFilters(prev => ({
@@ -73,38 +68,31 @@ const RestaurantList: React.FC = () => {
       setSortBy(sortParam);
     }
 
-    // Show toast about Indian focus
     toast.info("Showing Indian restaurants and markets in your area");
   }, [searchParams]);
   
-  // Apply filters and sorting
   useEffect(() => {
     let result = [...restaurants];
     
-    // Apply cuisine filter
     if (filters.cuisine.length > 0) {
       result = result.filter(restaurant => 
         restaurant.cuisine.some(cuisine => filters.cuisine.includes(cuisine as CuisineType))
       );
     }
     
-    // Apply price filter
     if (filters.price.length > 0) {
       result = result.filter(restaurant => 
         filters.price.includes(restaurant.priceRange)
       );
     }
 
-    // Apply features filter
     if (filters.features.length > 0) {
       result = result.filter(restaurant => 
         restaurant.features.some(feature => filters.features.includes(feature))
       );
     }
 
-    // Apply open now filter
     if (filters.openNow) {
-      // Mock implementation - would use real time in production
       const day = new Date().toLocaleDateString('en-US', { weekday: 'long' });
       result = result.filter(restaurant => 
         restaurant.hours && restaurant.hours[day] && 
@@ -112,7 +100,6 @@ const RestaurantList: React.FC = () => {
       );
     }
     
-    // Apply sorting
     switch (sortBy) {
       case 'rating':
         result.sort((a, b) => b.rating - a.rating);
@@ -132,7 +119,6 @@ const RestaurantList: React.FC = () => {
           return priceToNum(b.priceRange) - priceToNum(a.priceRange);
         });
         break;
-      // For relevance and distance, we'd need more data, so we'll just use the default order
     }
     
     setFilteredRestaurants(result);
