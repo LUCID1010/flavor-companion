@@ -5,13 +5,24 @@ import { Eye, EyeOff } from 'lucide-react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/hooks/useAuth';
+import { toast } from 'sonner';
 
 type AuthMode = 'login' | 'register';
 
 const Auth: React.FC = () => {
   const [mode, setMode] = useState<AuthMode>('login');
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { login, register } = useAuth();
+  
+  // Form state
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    password: ''
+  });
   
   const toggleMode = () => {
     setMode(mode === 'login' ? 'register' : 'login');
@@ -21,10 +32,31 @@ const Auth: React.FC = () => {
     setShowPassword(!showPassword);
   };
   
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+  
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // For now, just redirect to home since we're using mock data
-    navigate('/');
+    setIsLoading(true);
+    
+    try {
+      if (mode === 'login') {
+        await login(formData.email, formData.password);
+      } else {
+        await register(formData.name, formData.email, formData.password);
+      }
+      navigate('/');
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error('An unexpected error occurred');
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
   
   return (
@@ -56,6 +88,8 @@ const Auth: React.FC = () => {
                       type="text"
                       id="name"
                       name="name"
+                      value={formData.name}
+                      onChange={handleChange}
                       placeholder="Enter your name"
                       className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-gray-900 placeholder-gray-400 transition-colors focus:border-foodie-400 focus:outline-none focus:ring-1 focus:ring-foodie-400"
                       required
@@ -71,6 +105,8 @@ const Auth: React.FC = () => {
                     type="email"
                     id="email"
                     name="email"
+                    value={formData.email}
+                    onChange={handleChange}
                     placeholder="Enter your email"
                     className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-gray-900 placeholder-gray-400 transition-colors focus:border-foodie-400 focus:outline-none focus:ring-1 focus:ring-foodie-400"
                     required
@@ -94,6 +130,8 @@ const Auth: React.FC = () => {
                       type={showPassword ? 'text' : 'password'}
                       id="password"
                       name="password"
+                      value={formData.password}
+                      onChange={handleChange}
                       placeholder="Enter your password"
                       className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-gray-900 placeholder-gray-400 transition-colors focus:border-foodie-400 focus:outline-none focus:ring-1 focus:ring-foodie-400"
                       required
@@ -130,9 +168,15 @@ const Auth: React.FC = () => {
                 
                 <button
                   type="submit"
-                  className="w-full rounded-lg bg-foodie-500 py-3 font-medium text-white shadow-button transition-all hover:bg-foodie-600 active:bg-foodie-700"
+                  disabled={isLoading}
+                  className={cn(
+                    "w-full rounded-lg bg-foodie-500 py-3 font-medium text-white shadow-button transition-all hover:bg-foodie-600 active:bg-foodie-700",
+                    isLoading && "opacity-70 cursor-not-allowed"
+                  )}
                 >
-                  {mode === 'login' ? 'Sign In' : 'Create Account'}
+                  {isLoading 
+                    ? 'Please wait...' 
+                    : mode === 'login' ? 'Sign In' : 'Create Account'}
                 </button>
               </div>
             </form>
