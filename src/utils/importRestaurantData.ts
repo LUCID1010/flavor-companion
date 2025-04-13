@@ -1,5 +1,4 @@
-
-import { Restaurant, PriceRange } from '@/types';
+import { Restaurant, PriceRange, CuisineType } from '@/types';
 
 // This is a utility to convert the data from the CSV-like format in the image to Restaurant objects
 export const importRestaurants = (): Restaurant[] => {
@@ -201,7 +200,7 @@ export const importRestaurants = (): Restaurant[] => {
       id: data.id,
       name: data.name,
       description: `${data.name} is a ${data.category.toLowerCase()} restaurant located in ${data.locality}, ${data.city}, offering delicious ${data.cuisines.join(', ')} cuisine.`,
-      cuisine: data.cuisines,
+      cuisine: data.cuisines as CuisineType[],
       priceRange,
       address: data.address,
       city: data.city,

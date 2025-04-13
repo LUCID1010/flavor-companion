@@ -1,4 +1,3 @@
-
 import { toast } from "sonner";
 import { Restaurant, FilterOptions, SortOption } from "@/types";
 import { mockRestaurants } from "@/utils/mockData";
@@ -31,7 +30,7 @@ export const getAllRestaurants = (): Restaurant[] => {
     }, [] as Restaurant[]);
 
     // Add Indian cuisines to all restaurants
-    const indianCuisines = [
+    const indianCuisines: CuisineType[] = [
       'North Indian', 'South Indian', 'Bengali', 'Punjabi', 'Gujarati',
       'Rajasthani', 'Goan', 'Kashmiri', 'Mughlai', 'Kerala',
       'Andhra', 'Hyderabadi', 'Chettinad', 'Maharashtrian', 'Karnataka'
@@ -42,7 +41,7 @@ export const getAllRestaurants = (): Restaurant[] => {
       cuisine: [
         indianCuisines[Math.floor(Math.random() * indianCuisines.length)],
         indianCuisines[Math.floor(Math.random() * indianCuisines.length)],
-      ].filter((value, index, self) => self.indexOf(value) === index), // Remove duplicates
+      ].filter((value, index, self) => self.indexOf(value) === index) as CuisineType[],
       features: [...restaurant.features, 'Indian Cuisine'],
     }));
     

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from "sonner";
@@ -48,16 +47,9 @@ const RestaurantList: React.FC = () => {
         return acc;
       }
     }, [] as Restaurant[]);
-
-    // Update with focus on Indian restaurants
-    const indianRestaurants = uniqueRestaurants.map(restaurant => ({
-      ...restaurant,
-      // Set all restaurants to have some Indian cuisine
-      cuisine: [...restaurant.cuisine, 'North Indian', 'South Indian'].slice(0, 3),
-    }));
     
-    setRestaurants(indianRestaurants);
-    setFilteredRestaurants(indianRestaurants);
+    setRestaurants(uniqueRestaurants);
+    setFilteredRestaurants(uniqueRestaurants);
     
     // Check for query params
     const cuisineParam = searchParams.get('cuisine');

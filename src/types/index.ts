@@ -116,7 +116,19 @@ export type CuisineType =
   | 'Vegetarian'
   | 'Vegan'
   | 'Pure Veg'
-  | 'Jain';
+  | 'Jain'
+  | 'Street Food' 
+  | 'Fusion'
+  | 'American'
+  | 'Farm-to-table'
+  | 'Japanese'
+  | 'Sushi'
+  | 'Italian'
+  | 'Mediterranean'
+  | 'Seafood'
+  | 'Mexican'
+  | 'Latin American'
+  | 'Desserts';
 
 export type SortOption = 
   | 'relevance'
