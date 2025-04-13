@@ -1,15 +1,16 @@
 
 import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
+import { User } from '@/types';
 import { 
-  User, 
   getCurrentUser, 
   loginUser, 
   registerUser, 
   logoutUser,
   addFavorite,
   removeFavorite, 
-  updateUserLocation
-} from '@/services/authService';
+  updateUserLocation,
+  updateUserProfile
+} from '@/services/api/authApi';
 
 interface AuthContextType {
   user: User | null;
@@ -20,6 +21,7 @@ interface AuthContextType {
   toggleFavorite: (restaurantId: string) => void;
   isFavorite: (restaurantId: string) => boolean;
   setUserLocation: (latitude: number, longitude: number) => void;
+  updateProfile: (userData: Partial<User>) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -80,6 +82,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setUser({...user, location: { latitude, longitude }});
   };
   
+  const updateProfile = async (userData: Partial<User>) => {
+    try {
+      if (!user) throw new Error("User not logged in");
+      const updatedUser = updateUserProfile(userData);
+      setUser(updatedUser);
+    } catch (error) {
+      throw error;
+    }
+  };
+  
   return (
     <AuthContext.Provider value={{ 
       user, 
@@ -89,7 +101,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       logout, 
       toggleFavorite, 
       isFavorite,
-      setUserLocation
+      setUserLocation,
+      updateProfile
     }}>
       {children}
     </AuthContext.Provider>

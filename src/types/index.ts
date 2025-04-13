@@ -3,7 +3,7 @@ export interface Restaurant {
   id: string;
   name: string;
   description: string;
-  cuisine: string[];
+  cuisine: CuisineType[];
   priceRange: PriceRange;
   address: string;
   city: string;
@@ -26,6 +26,11 @@ export interface Restaurant {
   reviewCount: number;
   menuItems: MenuItem[];
   features: string[];
+  isVegetarian?: boolean;
+  isFeatured?: boolean;
+  cuisineSpecialty?: string;
+  isNew?: boolean;
+  lastUpdated?: Date;
 }
 
 export type PriceRange = '$' | '$$' | '$$$' | '$$$$';
@@ -38,6 +43,8 @@ export interface MenuItem {
   category: string;
   popular?: boolean;
   photo?: string;
+  isVegetarian?: boolean;
+  isSpicy?: number; // 0-3 scale
 }
 
 export interface Review {
@@ -59,6 +66,30 @@ export interface User {
   email: string;
   avatar?: string;
   favorites: string[];
+  location?: {
+    latitude: number;
+    longitude: number;
+  };
+  preferences?: {
+    vegetarian?: boolean;
+    cuisines?: CuisineType[];
+    priceRange?: PriceRange[];
+    allergies?: string[];
+  };
+  phoneNumber?: string;
+  addresses?: Address[];
+  lastLogin?: Date;
+}
+
+export interface Address {
+  id: string;
+  title: string;
+  address: string;
+  landmark?: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  isPrimary: boolean;
 }
 
 export type CuisineType = 
@@ -77,28 +108,15 @@ export type CuisineType =
   | 'Chettinad'
   | 'Maharashtrian'
   | 'Karnataka'
-  | 'American'
-  | 'Italian'
-  | 'Mexican'
-  | 'Chinese'
-  | 'Japanese'
-  | 'Thai'
   | 'Indian'
-  | 'French'
-  | 'Mediterranean'
-  | 'Korean'
-  | 'Vietnamese'
-  | 'Greek'
-  | 'Spanish'
-  | 'Middle Eastern'
+  | 'Indian Street Food'
+  | 'Indo-Chinese'
+  | 'Biryani'
+  | 'Sweets'
   | 'Vegetarian'
   | 'Vegan'
-  | 'Seafood'
-  | 'Barbecue'
-  | 'Fusion'
-  | 'Street Food'
-  | 'Sweets'
-  | 'Other';
+  | 'Pure Veg'
+  | 'Jain';
 
 export type SortOption = 
   | 'relevance'
@@ -114,4 +132,8 @@ export interface FilterOptions {
   features: string[];
   openNow: boolean;
   distance?: number;
+  userLocation?: {
+    lat: number;
+    lng: number;
+  };
 }

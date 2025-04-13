@@ -14,7 +14,7 @@ const Footer: React.FC = () => {
               Foodie<span className="text-foodie-500">Finder</span>
             </Link>
             <p className="mb-4 text-sm text-gray-600">
-              Discover the best restaurants in your area. FoodieFinder helps you find places to eat based on your preferences and location.
+              Discover the best Indian restaurants in your area. FoodieFinder helps you find authentic Indian cuisine based on your preferences and location.
             </p>
             <div className="flex gap-4">
               <a href="#" className="text-gray-400 transition-colors hover:text-foodie-500" aria-label="Facebook">
@@ -47,9 +47,9 @@ const Footer: React.FC = () => {
             <div>
               <h3 className="mb-3 text-sm font-semibold uppercase text-gray-500">Resources</h3>
               <ul className="space-y-2 text-sm">
-                <li><a href="#" className="text-gray-600 transition-colors hover:text-foodie-500">Blog</a></li>
-                <li><a href="#" className="text-gray-600 transition-colors hover:text-foodie-500">Food Guides</a></li>
-                <li><a href="#" className="text-gray-600 transition-colors hover:text-foodie-500">Cuisine Types</a></li>
+                <li><Link to="/about" className="text-gray-600 transition-colors hover:text-foodie-500">About Us</Link></li>
+                <li><Link to="/contact" className="text-gray-600 transition-colors hover:text-foodie-500">Contact Us</Link></li>
+                <li><Link to="/restaurants" className="text-gray-600 transition-colors hover:text-foodie-500">Cuisine Types</Link></li>
                 <li><a href="#" className="text-gray-600 transition-colors hover:text-foodie-500">For Restaurants</a></li>
               </ul>
             </div>
@@ -57,10 +57,10 @@ const Footer: React.FC = () => {
             <div>
               <h3 className="mb-3 text-sm font-semibold uppercase text-gray-500">Legal</h3>
               <ul className="space-y-2 text-sm">
-                <li><a href="#" className="text-gray-600 transition-colors hover:text-foodie-500">Terms of Service</a></li>
-                <li><a href="#" className="text-gray-600 transition-colors hover:text-foodie-500">Privacy Policy</a></li>
-                <li><a href="#" className="text-gray-600 transition-colors hover:text-foodie-500">Cookie Policy</a></li>
-                <li><a href="#" className="text-gray-600 transition-colors hover:text-foodie-500">Contact Us</a></li>
+                <li><Link to="/terms-of-service" className="text-gray-600 transition-colors hover:text-foodie-500">Terms of Service</Link></li>
+                <li><Link to="/privacy-policy" className="text-gray-600 transition-colors hover:text-foodie-500">Privacy Policy</Link></li>
+                <li><Link to="/cookie-policy" className="text-gray-600 transition-colors hover:text-foodie-500">Cookie Policy</Link></li>
+                <li><Link to="/contact" className="text-gray-600 transition-colors hover:text-foodie-500">Contact Us</Link></li>
               </ul>
             </div>
           </div>
@@ -68,7 +68,7 @@ const Footer: React.FC = () => {
         
         <div className="mt-12 border-t border-gray-200 pt-6">
           <p className="text-center text-sm text-gray-500">
-            © {new Date().getFullYear()} FoodieFinder. All rights reserved.
+            © {new Date().getFullYear()} FoodieFinder. All rights reserved. Your guide to authentic Indian cuisine.
           </p>
         </div>
       </div>
