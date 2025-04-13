@@ -54,7 +54,7 @@ export const searchRestaurants = async (locationId: string, offset: number = 0, 
         language: "en_US",
         limit,
         location_id: locationId,
-        currency: "USD",
+        currency: "INR", // Changed to Indian Rupees
         offset
       })
     });
@@ -82,7 +82,7 @@ export const getRestaurantDetails = async (restaurantId: string) => {
       headers: apiConfig.headers,
       body: JSON.stringify({
         language: "en_US",
-        currency: "USD",
+        currency: "INR", // Changed to Indian Rupees
         location_id: restaurantId
       })
     });
@@ -102,15 +102,19 @@ export const getRestaurantDetails = async (restaurantId: string) => {
 
 /**
  * Search for locations (cities, neighborhoods) to get locationId
+ * Focuses on Indian cities by default
  */
 export const searchLocations = async (query: string) => {
   try {
+    // Append "India" to the query if it doesn't already contain it
+    const modifiedQuery = query.toLowerCase().includes('india') ? query : `${query}, India`;
+    
     const response = await fetch(`${apiConfig.baseUrl}/typeahead`, {
       method: 'POST',
       headers: apiConfig.headers,
       body: JSON.stringify({
         language: "en_US",
-        q: query
+        q: modifiedQuery
       })
     });
 

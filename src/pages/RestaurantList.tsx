@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { toast } from "sonner";
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import SearchBar from '@/components/ui/SearchBar';
@@ -21,8 +22,15 @@ const RestaurantList: React.FC = () => {
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [filteredRestaurants, setFilteredRestaurants] = useState<Restaurant[]>([]);
   const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
-  const [selectedCuisines, setSelectedCuisines] = useState<CuisineType[]>([]);
-  const [selectedPrices, setSelectedPrices] = useState<PriceRange[]>([]);
+
+  // Create a filters state to pass to FilterPanel
+  const [filters, setFilters] = useState<FilterOptions>({
+    cuisine: [],
+    price: [],
+    features: [],
+    openNow: false,
+  });
+  
   const [sortBy, setSortBy] = useState('relevance');
   
   // Load restaurants on mount
@@ -40,25 +48,41 @@ const RestaurantList: React.FC = () => {
         return acc;
       }
     }, [] as Restaurant[]);
+
+    // Update with focus on Indian restaurants
+    const indianRestaurants = uniqueRestaurants.map(restaurant => ({
+      ...restaurant,
+      // Set all restaurants to have some Indian cuisine
+      cuisine: [...restaurant.cuisine, 'North Indian', 'South Indian'].slice(0, 3),
+    }));
     
-    setRestaurants(uniqueRestaurants);
-    setFilteredRestaurants(uniqueRestaurants);
+    setRestaurants(indianRestaurants);
+    setFilteredRestaurants(indianRestaurants);
     
     // Check for query params
     const cuisineParam = searchParams.get('cuisine');
     if (cuisineParam) {
-      setSelectedCuisines([cuisineParam as CuisineType]);
+      setFilters(prev => ({
+        ...prev,
+        cuisine: [cuisineParam as CuisineType]
+      }));
     }
     
     const priceParam = searchParams.get('price');
     if (priceParam) {
-      setSelectedPrices([priceParam as PriceRange]);
+      setFilters(prev => ({
+        ...prev,
+        price: [priceParam as PriceRange]
+      }));
     }
     
     const sortParam = searchParams.get('sort');
     if (sortParam) {
       setSortBy(sortParam);
     }
+
+    // Show toast about Indian focus
+    toast.info("Showing Indian restaurants and markets in your area");
   }, [searchParams]);
   
   // Apply filters and sorting
@@ -66,16 +90,33 @@ const RestaurantList: React.FC = () => {
     let result = [...restaurants];
     
     // Apply cuisine filter
-    if (selectedCuisines.length > 0) {
+    if (filters.cuisine.length > 0) {
       result = result.filter(restaurant => 
-        restaurant.cuisine.some(cuisine => selectedCuisines.includes(cuisine as CuisineType))
+        restaurant.cuisine.some(cuisine => filters.cuisine.includes(cuisine as CuisineType))
       );
     }
     
     // Apply price filter
-    if (selectedPrices.length > 0) {
+    if (filters.price.length > 0) {
       result = result.filter(restaurant => 
-        selectedPrices.includes(restaurant.priceRange)
+        filters.price.includes(restaurant.priceRange)
+      );
+    }
+
+    // Apply features filter
+    if (filters.features.length > 0) {
+      result = result.filter(restaurant => 
+        restaurant.features.some(feature => filters.features.includes(feature))
+      );
+    }
+
+    // Apply open now filter
+    if (filters.openNow) {
+      // Mock implementation - would use real time in production
+      const day = new Date().toLocaleDateString('en-US', { weekday: 'long' });
+      result = result.filter(restaurant => 
+        restaurant.hours && restaurant.hours[day] && 
+        restaurant.hours[day].open && restaurant.hours[day].close
       );
     }
     
@@ -103,11 +144,10 @@ const RestaurantList: React.FC = () => {
     }
     
     setFilteredRestaurants(result);
-  }, [restaurants, selectedCuisines, selectedPrices, sortBy]);
+  }, [restaurants, filters, sortBy]);
   
-  const handleFilterChange = (filters: FilterOptions) => {
-    setSelectedCuisines(filters.cuisine);
-    setSelectedPrices(filters.price);
+  const handleFilterChange = (newFilters: FilterOptions) => {
+    setFilters(newFilters);
   };
   
   const handleSortChange = (value: string) => {
@@ -126,7 +166,7 @@ const RestaurantList: React.FC = () => {
         <div className="bg-white py-8">
           <div className="foodie-container">
             <h1 className="mb-6 text-2xl font-semibold text-gray-900 sm:text-3xl">
-              Restaurants in Your Area
+              Indian Restaurants in Your Area
             </h1>
             
             <div className="mb-8">
@@ -179,8 +219,7 @@ const RestaurantList: React.FC = () => {
               <div className="lg:col-span-1">
                 <FilterPanel 
                   onFilterChange={handleFilterChange}
-                  initialCuisines={selectedCuisines}
-                  initialPrices={selectedPrices}
+                  filters={filters}
                 />
               </div>
               

@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Check, ChevronDown } from 'lucide-react';
 import { CuisineType, FilterOptions, PriceRange } from '@/types';
 import { cn } from '@/lib/utils';
@@ -27,21 +27,23 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
 
   const isExpanded = (section: string) => expanded.includes(section);
 
+  // Updated cuisine options to focus on Indian regional cuisines
   const cuisineOptions: CuisineType[] = [
-    'American', 'Italian', 'Mexican', 'Chinese', 'Japanese', 
-    'Thai', 'Indian', 'French', 'Mediterranean', 'Korean',
-    'Vietnamese', 'Greek', 'Spanish', 'Middle Eastern', 
-    'Vegetarian', 'Vegan', 'Seafood', 'Barbecue', 'Fusion'
+    'North Indian', 'South Indian', 'Bengali', 'Punjabi', 'Gujarati', 
+    'Rajasthani', 'Goan', 'Kashmiri', 'Mughlai', 'Kerala', 
+    'Andhra', 'Hyderabadi', 'Chettinad', 'Maharashtrian', 
+    'Vegetarian', 'Vegan', 'Street Food', 'Sweets', 'Fusion'
   ];
 
   const priceOptions: PriceRange[] = ['$', '$$', '$$$', '$$$$'];
 
+  // Updated features for Indian context
   const featureOptions: string[] = [
     'Outdoor Seating', 'Takeout', 'Delivery', 'Vegetarian Options',
-    'Vegan Options', 'Gluten-Free Options', 'Full Bar', 'Wine Selection',
-    'Happy Hour', 'Good for Groups', 'Good for Kids', 'Wheelchair Accessible',
-    'Reservations', 'Free Wi-Fi', 'Live Music', 'Pet Friendly',
-    'Brunch', 'Late Night'
+    'Pure Veg', 'Jain Options', 'Thali', 'Buffet', 'Live Music',
+    'Family Friendly', 'Late Night', 'Authentic', 'Fine Dining',
+    'Dhaba Style', 'Air Conditioned', 'Rooftop', 'Pet Friendly',
+    'Marriage Hall'
   ];
 
   const updateCuisine = (cuisine: CuisineType) => {

@@ -62,6 +62,21 @@ export interface User {
 }
 
 export type CuisineType = 
+  | 'North Indian'
+  | 'South Indian'
+  | 'Bengali'
+  | 'Punjabi'
+  | 'Gujarati'
+  | 'Rajasthani'
+  | 'Goan'
+  | 'Kashmiri'
+  | 'Mughlai'
+  | 'Kerala'
+  | 'Andhra'
+  | 'Hyderabadi'
+  | 'Chettinad'
+  | 'Maharashtrian'
+  | 'Karnataka'
   | 'American'
   | 'Italian'
   | 'Mexican'
@@ -81,6 +96,8 @@ export type CuisineType =
   | 'Seafood'
   | 'Barbecue'
   | 'Fusion'
+  | 'Street Food'
+  | 'Sweets'
   | 'Other';
 
 export type SortOption = 
