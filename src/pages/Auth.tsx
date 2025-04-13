@@ -1,12 +1,13 @@
 
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Eye, EyeOff } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 
 type AuthMode = 'login' | 'register';
 
@@ -14,8 +15,9 @@ const Auth: React.FC = () => {
   const [mode, setMode] = useState<AuthMode>('login');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const { login, register, user } = useAuth();
   const navigate = useNavigate();
-  const { login, register } = useAuth();
+  const location = useLocation();
   
   // Form state
   const [formData, setFormData] = useState({
@@ -23,6 +25,30 @@ const Auth: React.FC = () => {
     email: '',
     password: ''
   });
+  
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (user) {
+      navigate('/');
+    }
+    
+    // Check for authentication hash from magic link or OAuth
+    const checkForAuthRedirect = async () => {
+      const { hash } = window.location;
+      if (hash && hash.includes('access_token')) {
+        setIsLoading(true);
+        const { data, error } = await supabase.auth.getSession();
+        if (error) {
+          toast.error(error.message);
+        } else if (data?.session) {
+          navigate('/');
+        }
+        setIsLoading(false);
+      }
+    };
+    
+    checkForAuthRedirect();
+  }, [user, navigate]);
   
   const toggleMode = () => {
     setMode(mode === 'login' ? 'register' : 'login');
@@ -47,13 +73,47 @@ const Auth: React.FC = () => {
       } else {
         await register(formData.name, formData.email, formData.password);
       }
-      navigate('/');
     } catch (error) {
-      if (error instanceof Error) {
-        toast.error(error.message);
-      } else {
-        toast.error('An unexpected error occurred');
-      }
+      // Error is already handled in useAuth hook
+      setIsLoading(false);
+    }
+  };
+
+  // Handle social auth
+  const handleSocialAuth = async (provider: 'google' | 'facebook') => {
+    try {
+      setIsLoading(true);
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider,
+        options: {
+          redirectTo: `${window.location.origin}/auth`
+        }
+      });
+      
+      if (error) throw error;
+    } catch (error: any) {
+      toast.error(error.message || `Failed to sign in with ${provider}`);
+      setIsLoading(false);
+    }
+  };
+  
+  // Handle password reset
+  const handlePasswordReset = async () => {
+    const email = prompt('Please enter your email to receive a password reset link');
+    
+    if (!email) return;
+    
+    try {
+      setIsLoading(true);
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/auth`
+      });
+      
+      if (error) throw error;
+      
+      toast.success('Password reset email sent! Check your inbox.');
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to send reset email');
     } finally {
       setIsLoading(false);
     }
@@ -66,6 +126,12 @@ const Auth: React.FC = () => {
       <main className="flex flex-1 items-center justify-center py-16">
         <div className="foodie-container flex justify-center">
           <div className="relative w-full max-w-md rounded-xl border border-gray-100 bg-white p-6 shadow-elegant sm:p-8 md:p-10">
+            {isLoading && (
+              <div className="absolute inset-0 z-10 flex items-center justify-center rounded-xl bg-white/80 backdrop-blur-sm">
+                <Loader2 className="h-8 w-8 animate-spin text-foodie-500" />
+              </div>
+            )}
+            
             <div className="mb-8 text-center">
               <h1 className="mb-2 text-2xl font-semibold text-gray-900 sm:text-3xl">
                 {mode === 'login' ? 'Welcome back' : 'Create your account'}
@@ -119,9 +185,13 @@ const Auth: React.FC = () => {
                       Password
                     </label>
                     {mode === 'login' && (
-                      <a href="#" className="text-xs font-medium text-foodie-600 transition-colors hover:text-foodie-700">
+                      <button 
+                        type="button"
+                        onClick={handlePasswordReset}
+                        className="text-xs font-medium text-foodie-600 transition-colors hover:text-foodie-700"
+                      >
                         Forgot password?
-                      </a>
+                      </button>
                     )}
                   </div>
                   
@@ -193,7 +263,9 @@ const Auth: React.FC = () => {
             <div className="mt-4 grid grid-cols-2 gap-3">
               <button
                 type="button"
+                onClick={() => handleSocialAuth('google')}
                 className="flex items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white py-2.5 text-sm font-medium text-gray-700 shadow-sm transition-all hover:bg-gray-50"
+                disabled={isLoading}
               >
                 <svg className="h-5 w-5" viewBox="0 0 24 24">
                   <path
@@ -217,7 +289,9 @@ const Auth: React.FC = () => {
               </button>
               <button
                 type="button"
+                onClick={() => handleSocialAuth('facebook')}
                 className="flex items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white py-2.5 text-sm font-medium text-gray-700 shadow-sm transition-all hover:bg-gray-50"
+                disabled={isLoading}
               >
                 <svg className="h-5 w-5 text-[#1877F2]" fill="currentColor" viewBox="0 0 24 24">
                   <path

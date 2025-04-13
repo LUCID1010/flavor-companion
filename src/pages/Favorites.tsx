@@ -1,29 +1,58 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Heart } from 'lucide-react';
+import { Heart, Loader2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import RestaurantCard from '@/components/ui/RestaurantCard';
-import { getRestaurantById, mockUsers } from '@/utils/mockData';
+import { getRestaurantById } from '@/utils/mockData';
 import { Restaurant } from '@/types';
+import { useAuth } from '@/hooks/useAuth';
 
 const Favorites: React.FC = () => {
-  const [favorites, setFavorites] = useState<string[]>(mockUsers[0]?.favorites || []);
+  const { user, isFavorite, toggleFavorite } = useAuth();
   const [favoriteRestaurants, setFavoriteRestaurants] = useState<Restaurant[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
   
   useEffect(() => {
-    // Get restaurant data for favorites
-    const restaurants = favorites.map(id => getRestaurantById(id)).filter(Boolean) as Restaurant[];
-    setFavoriteRestaurants(restaurants);
+    // Check if user is logged in, redirect to login if not
+    if (!user && !isLoading) {
+      navigate('/auth');
+      return;
+    }
+    
+    if (user) {
+      // Get restaurant data for favorites
+      const restaurants = user.favorites
+        .map(id => getRestaurantById(id))
+        .filter(Boolean) as Restaurant[];
+        
+      setFavoriteRestaurants(restaurants);
+      setIsLoading(false);
+    }
     
     // Scroll to top on mount
     window.scrollTo(0, 0);
-  }, [favorites]);
+  }, [user, navigate, isLoading]);
   
-  const toggleFavorite = (id: string) => {
-    setFavorites(prev => prev.filter(fav => fav !== id));
+  const handleFavoriteToggle = async (id: string) => {
+    await toggleFavorite(id);
+    setFavoriteRestaurants(prev => prev.filter(restaurant => restaurant.id !== id));
   };
+  
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen flex-col">
+        <Navbar />
+        <main className="flex flex-1 items-center justify-center">
+          <Loader2 className="h-10 w-10 animate-spin text-foodie-500" />
+        </main>
+        <Footer />
+      </div>
+    );
+  }
   
   return (
     <div className="flex min-h-screen flex-col">
@@ -49,7 +78,7 @@ const Favorites: React.FC = () => {
                   key={restaurant.id}
                   restaurant={restaurant}
                   isFavorite={true}
-                  onFavoriteToggle={toggleFavorite}
+                  onFavoriteToggle={() => handleFavoriteToggle(restaurant.id)}
                   className="animate-fade-in"
                 />
               ))}
