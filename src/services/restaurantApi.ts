@@ -1,7 +1,7 @@
 
 import { toast } from "sonner";
 
-const RAPIDAPI_KEY = "YOUR_RAPIDAPI_KEY"; // Replace this with your actual RapidAPI key
+const RAPIDAPI_KEY = import.meta.env.VITE_RAPIDAPI_KEY; // Replace this with your actual RapidAPI key
 const RAPIDAPI_HOST = "worldwide-restaurants.p.rapidapi.com";
 
 /**
