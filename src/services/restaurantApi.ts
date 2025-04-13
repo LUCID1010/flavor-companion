@@ -1,7 +1,7 @@
 
 import { toast } from "sonner";
 
-const RAPIDAPI_KEY = import.meta.env.VITE_RAPIDAPI_KEY; // Replace this with your actual RapidAPI key
+const RAPIDAPI_KEY = d0054cd1d8msh90d4237424c35f8p10b2f5jsnd9f86d5e4699; // Replace this with your actual RapidAPI key
 const RAPIDAPI_HOST = "worldwide-restaurants.p.rapidapi.com";
 
 /**
@@ -28,6 +28,9 @@ export const fetchLanguages = async () => {
 
     if (!response.ok) {
       throw new Error(`API error: ${response.status}`);
+    }
+    if (response.status === 403) {
+      throw new Error("Access denied. Check API key or quota.");
     }
 
     const data = await response.json();
