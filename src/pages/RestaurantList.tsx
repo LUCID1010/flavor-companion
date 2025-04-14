@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from "sonner";
@@ -25,6 +26,7 @@ const RestaurantList: React.FC = () => {
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [recommendedRestaurants, setRecommendedRestaurants] = useState<Restaurant[]>([]);
+  const [chandigarhRestaurants, setChandigarhRestaurants] = useState<Restaurant[]>([]);
 
   const [filters, setFilters] = useState<FilterOptions>({
     cuisine: [],
@@ -42,36 +44,44 @@ const RestaurantList: React.FC = () => {
       setRestaurants(zomatoRestaurants);
       setFilteredRestaurants(zomatoRestaurants);
       
+      // Filter Chandigarh restaurants specifically
+      const chandigarh = zomatoRestaurants.filter(r => r.city === 'Chandigarh');
+      setChandigarhRestaurants(chandigarh);
+      
       // Get user location
       const fetchLocation = async () => {
         try {
           const location = await getCurrentUserLocation();
           setUserLocation(location);
           
-          // Generate recommendations based on user location
+          // Default to Chandigarh location if no restaurants found near user
+          const chandigarhLocation = { lat: 30.7333, lng: 76.7794 };
+          
+          // Generate recommendations based on Chandigarh location
           const recommended = getRestaurantRecommendations(
             zomatoRestaurants,
-            location.lat,
-            location.lng,
+            chandigarhLocation.lat,
+            chandigarhLocation.lng,
             undefined, // No cuisine filter initially
             3.5, // Min rating
-            10, // Max distance km
+            5, // Max distance km
             10, // Top N results
             2 // Max per locality
           );
           
           setRecommendedRestaurants(recommended);
+          setUserLocation(chandigarhLocation); // Set to Chandigarh for map display
         } catch (error) {
           console.error('Error getting user location:', error);
-          // Default to Mumbai, India
-          const defaultLocation = { lat: 19.076, lng: 72.8777 };
-          setUserLocation(defaultLocation);
+          // Default to Chandigarh, India
+          const chandigarhLocation = { lat: 30.7333, lng: 76.7794 };
+          setUserLocation(chandigarhLocation);
           
-          // Generate recommendations based on default location
+          // Generate recommendations based on Chandigarh location
           const recommended = getRestaurantRecommendations(
             zomatoRestaurants,
-            defaultLocation.lat,
-            defaultLocation.lng
+            chandigarhLocation.lat,
+            chandigarhLocation.lng
           );
           
           setRecommendedRestaurants(recommended);
@@ -109,7 +119,7 @@ const RestaurantList: React.FC = () => {
       setIsLoading(false);
     }
 
-    toast.info("Showing Indian restaurants in your area");
+    toast.info("Showing Indian restaurants in Chandigarh");
   }, [searchParams]);
   
   useEffect(() => {
@@ -239,20 +249,20 @@ const RestaurantList: React.FC = () => {
         <div className="bg-white py-8">
           <div className="foodie-container">
             <h1 className="mb-6 text-2xl font-semibold text-gray-900 sm:text-3xl">
-              Indian Restaurants in Your Area
+              Indian Restaurants in Chandigarh
             </h1>
             
             <div className="mb-8">
               <SearchBar showButton />
             </div>
             
-            {!isLoading && recommendedRestaurants.length > 0 && (
+            {!isLoading && chandigarhRestaurants.length > 0 && (
               <div className="mb-10">
                 <h2 className="mb-4 text-xl font-medium text-gray-900">
-                  Recommended for You
+                  Top Restaurants in Chandigarh
                 </h2>
                 <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                  {recommendedRestaurants.slice(0, 4).map((restaurant) => (
+                  {chandigarhRestaurants.slice(0, 4).map((restaurant) => (
                     <RestaurantCard
                       key={restaurant.id}
                       restaurant={restaurant}
@@ -316,20 +326,21 @@ const RestaurantList: React.FC = () => {
               </div>
               
               <div className="lg:col-span-3">
-                {viewMode === 'map' ? (
+                {viewMode === 'map' && userLocation ? (
                   <div className="mb-6">
                     <LeafletMap 
-                      restaurants={filteredRestaurants} 
-                      userLocation={userLocation || undefined}
+                      restaurants={chandigarhRestaurants} 
+                      userLocation={userLocation}
                       onSelectRestaurant={handleRestaurantSelect} 
                       className="h-[500px]"
+                      showPopupOnLoad={true}
                     />
                   </div>
                 ) : null}
                 
-                {filteredRestaurants.length > 0 ? (
+                {chandigarhRestaurants.length > 0 ? (
                   <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                    {filteredRestaurants.map((restaurant) => (
+                    {chandigarhRestaurants.map((restaurant) => (
                       <RestaurantCard
                         key={restaurant.id}
                         restaurant={restaurant}

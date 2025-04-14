@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -33,9 +32,9 @@ const LeafletMap: React.FC<LeafletMapProps> = ({
     if (!mapContainerRef.current || mapRef.current) return;
 
     try {
-      // Set default view to a central location in India if no restaurants or user location
-      let initialView = { lat: 20.5937, lng: 78.9629 }; // Center of India
-      let initialZoom = 5;
+      // Set default view to Chandigarh, India if no restaurants or user location
+      let initialView = { lat: 30.7333, lng: 76.7794 }; // Center of Chandigarh
+      let initialZoom = 12;
 
       // If we have user location, use that
       if (userLocation) {
@@ -116,7 +115,7 @@ const LeafletMap: React.FC<LeafletMapProps> = ({
       }).addTo(map);
     }
 
-    // Add user location marker
+    // Add user location marker (default to Chandigarh if not provided)
     if (userLocation) {
       const userIcon = L.divIcon({
         html: `<div style="background-color: #2563eb; width: 15px; height: 15px; border-radius: 50%; border: 2px solid white;"></div>`,
@@ -127,7 +126,7 @@ const LeafletMap: React.FC<LeafletMapProps> = ({
       
       L.marker([userLocation.lat, userLocation.lng], { icon: userIcon })
         .addTo(map)
-        .bindPopup('Your location')
+        .bindPopup('Current Location')
         .openPopup();
     }
 
@@ -136,8 +135,8 @@ const LeafletMap: React.FC<LeafletMapProps> = ({
       // Custom icon for restaurants
       const isHighlighted = highlightedRestaurantId && highlightedRestaurantId === restaurant.id;
       
-      const iconSize = isHighlighted ? 18 : 12;
-      const iconColor = isHighlighted ? '#ff4500' : '#e11d48';
+      const iconSize = isHighlighted ? 20 : 14;
+      const iconColor = restaurant.city === 'Chandigarh' ? '#ff4500' : '#e11d48';
       const borderWidth = isHighlighted ? 3 : 2;
       
       const restaurantIcon = L.divIcon({
@@ -159,7 +158,7 @@ const LeafletMap: React.FC<LeafletMapProps> = ({
         ? restaurant.photos[0] 
         : `https://source.unsplash.com/random/100x100/?indian,food,${restaurant.cuisine[0]}`;
       
-      // Create popup content with image
+      // Create popup content with image and highlight Chandigarh restaurants
       let popupContent = `
         <div style="max-width: 220px; padding: 0; border-radius: 8px; overflow: hidden;">
           <div style="height: 100px; overflow: hidden;">
@@ -176,6 +175,13 @@ const LeafletMap: React.FC<LeafletMapProps> = ({
               <span style="color: #6B7280; margin-left: 3px;">(${restaurant.reviewCount})</span>
               <span style="margin-left: auto; color: #6B7280;">${restaurant.priceRange}</span>
             </div>
+      `;
+      
+      // Add location name
+      popupContent += `
+        <div style="font-size: 12px; color: #6B7280; margin-top: 3px;">
+          <strong>${restaurant.city}</strong> - ${restaurant.locality || restaurant.address.split(',')[0]}
+        </div>
       `;
       
       // Add distance if user location available
@@ -196,7 +202,7 @@ const LeafletMap: React.FC<LeafletMapProps> = ({
       popupContent += `
           <button 
             id="view-${restaurant.id}" 
-            style="width: 100%; margin-top: 8px; padding: 6px; background: #e11d48; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 500; font-size: 13px;"
+            style="width: 100%; margin-top: 8px; padding: 6px; background: ${restaurant.city === 'Chandigarh' ? '#ff4500' : '#e11d48'}; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 500; font-size: 13px;"
           >
             View Details
           </button>
@@ -211,11 +217,11 @@ const LeafletMap: React.FC<LeafletMapProps> = ({
       
       marker.bindPopup(popup);
       
-      // Auto-open popup for highlighted restaurant
-      if (isHighlighted) {
+      // Auto-open popup for highlighted restaurant or Chandigarh restaurants
+      if (isHighlighted || (showPopupOnLoad && restaurant.city === 'Chandigarh')) {
         marker.openPopup();
-      } else if (showPopupOnLoad && restaurants.length === 1) {
-        // If only one restaurant and showPopupOnLoad is true, open it
+      } else if (showPopupOnLoad && restaurants.length <= 5) {
+        // If only a few restaurants and showPopupOnLoad is true, open all
         marker.openPopup();
       }
       
@@ -269,6 +275,19 @@ const LeafletMap: React.FC<LeafletMapProps> = ({
       {isMapLoaded && restaurants.length === 0 && (
         <div className="absolute bottom-4 left-0 right-0 mx-auto w-max bg-white px-4 py-2 rounded-full shadow-md text-sm">
           No restaurants found in this area
+        </div>
+      )}
+      
+      {isMapLoaded && restaurants.length > 0 && (
+        <div className="absolute top-3 left-3 z-10 bg-white rounded-lg px-3 py-2 text-xs font-medium shadow-md">
+          <div className="flex items-center gap-2">
+            <span className="inline-block w-3 h-3 rounded-full bg-[#ff4500]"></span>
+            <span>Chandigarh Restaurants</span>
+          </div>
+          <div className="flex items-center gap-2 mt-1">
+            <span className="inline-block w-3 h-3 rounded-full bg-[#e11d48]"></span>
+            <span>Other Restaurants</span>
+          </div>
         </div>
       )}
     </div>
