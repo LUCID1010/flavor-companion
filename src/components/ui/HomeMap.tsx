@@ -1,10 +1,13 @@
 
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MapPin, Loader2, Navigation } from 'lucide-react';
+import { Loader2, Navigation } from 'lucide-react';
 import { toast } from 'sonner';
 import { Restaurant } from '@/types';
-import { getNearbyRestaurants, getCurrentUserLocation, UserLocation } from '@/services/api/mapApi';
+import { getCurrentUserLocation, UserLocation } from '@/services/api/mapApi';
+import { getAllZomatoRestaurants } from '@/utils/zomatoData';
+import { getRestaurantRecommendations } from '@/utils/recommendationEngine';
+import GoogleMapView from './GoogleMapView';
 
 interface HomeMapProps {
   className?: string;
@@ -38,8 +41,21 @@ const HomeMap: React.FC<HomeMapProps> = ({
           setUserLocation(location);
         }
         
-        // Get nearby restaurants
-        const nearby = getNearbyRestaurants(location, 20); // 20km radius
+        // Get Zomato restaurants
+        const allRestaurants = getAllZomatoRestaurants();
+        
+        // Get nearby restaurants using recommendation engine
+        const nearby = getRestaurantRecommendations(
+          allRestaurants,
+          location.lat,
+          location.lng,
+          undefined, // No cuisine filter
+          3.5, // Min rating
+          20, // 20km radius
+          10, // Top 10 results
+          2 // Max 2 per locality
+        );
+        
         setRestaurants(nearby);
       } catch (err) {
         console.error('Error fetching data:', err);
@@ -60,7 +76,12 @@ const HomeMap: React.FC<HomeMapProps> = ({
       setUserLocation(location);
       
       // Update restaurants based on new location
-      const nearby = getNearbyRestaurants(location, 20);
+      const allRestaurants = getAllZomatoRestaurants();
+      const nearby = getRestaurantRecommendations(
+        allRestaurants,
+        location.lat,
+        location.lng
+      );
       setRestaurants(nearby);
       toast.success('Location updated successfully');
     } catch (error) {
@@ -78,20 +99,20 @@ const HomeMap: React.FC<HomeMapProps> = ({
     }
   };
   
-  // Simple map visualization for demonstration
-  // In a real app, this would use a mapping library like Leaflet or Google Maps
-  const renderMap = () => {
-    if (isLoading) {
-      return (
+  if (isLoading) {
+    return (
+      <div className={`relative rounded-lg border border-gray-200 shadow-md overflow-hidden ${className}`}>
         <div className="flex h-full flex-col items-center justify-center bg-gray-50">
           <Loader2 className="h-8 w-8 animate-spin text-foodie-500" />
           <p className="mt-2 text-sm text-gray-600">Finding nearby restaurants...</p>
         </div>
-      );
-    }
-    
-    if (error || !userLocation) {
-      return (
+      </div>
+    );
+  }
+  
+  if (error || !userLocation) {
+    return (
+      <div className={`relative rounded-lg border border-gray-200 shadow-md overflow-hidden ${className}`}>
         <div className="flex h-full flex-col items-center justify-center bg-gray-50">
           <p className="text-center text-gray-600">{error || 'Location access required to show nearby restaurants'}</p>
           <button
@@ -102,66 +123,18 @@ const HomeMap: React.FC<HomeMapProps> = ({
             <span>Share My Location</span>
           </button>
         </div>
-      );
-    }
-    
-    return (
-      <div className="relative h-full overflow-hidden">
-        {/* Map Background */}
-        <div className="absolute inset-0 bg-gray-100">
-          <div className="absolute inset-0" style={{
-            backgroundImage: 'linear-gradient(to right, #e5e7eb 1px, transparent 1px), linear-gradient(to bottom, #e5e7eb 1px, transparent 1px)',
-            backgroundSize: '20px 20px'
-          }}></div>
-        </div>
-        
-        {/* User location */}
-        <div className="absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2">
-          <div className="flex flex-col items-center">
-            <div className="h-5 w-5 rounded-full bg-blue-500 ring-4 ring-blue-300">
-              <div className="h-5 w-5 animate-ping rounded-full bg-blue-500 opacity-75"></div>
-            </div>
-            <span className="mt-1 rounded bg-white px-2 py-0.5 text-xs font-medium shadow-sm">
-              You are here
-            </span>
-          </div>
-        </div>
-        
-        {/* Restaurants */}
-        {restaurants.map(restaurant => (
-          <div 
-            key={restaurant.id}
-            className="absolute cursor-pointer transform"
-            style={{ 
-              left: `${50 + (restaurant.location.lng - userLocation.lng) * 100}%`, 
-              top: `${50 - (restaurant.location.lat - userLocation.lat) * 100}%` 
-            }}
-            onClick={() => handleSelectRestaurant(restaurant.id)}
-          >
-            <div className="flex flex-col items-center">
-              <MapPin size={24} className="text-foodie-500 fill-foodie-100" />
-              <span className="mt-1 rounded bg-white px-2 py-0.5 text-xs font-medium shadow-sm truncate max-w-[150px]">
-                {restaurant.name}
-              </span>
-            </div>
-          </div>
-        ))}
-        
-        {/* Refresh location button */}
-        <button
-          onClick={handleGetLocation}
-          className="absolute bottom-4 right-4 flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-sm font-medium text-gray-700 shadow-md hover:bg-gray-50"
-        >
-          <Navigation size={16} className="text-foodie-500" />
-          <span>Update Location</span>
-        </button>
       </div>
     );
-  };
-
+  }
+  
   return (
     <div className={`relative rounded-lg border border-gray-200 shadow-md overflow-hidden ${className}`}>
-      {renderMap()}
+      <GoogleMapView 
+        restaurants={restaurants}
+        userLocation={userLocation}
+        onSelectRestaurant={handleSelectRestaurant}
+        className="h-full"
+      />
     </div>
   );
 };

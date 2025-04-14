@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from "sonner";
@@ -7,11 +8,12 @@ import SearchBar from '@/components/ui/SearchBar';
 import FilterPanel from '@/components/ui/FilterPanel';
 import RestaurantCard from '@/components/ui/RestaurantCard';
 import { CuisineType, FilterOptions, PriceRange, Restaurant } from '@/types';
-import { mockRestaurants } from '@/utils/mockData';
-import { importRestaurants } from '@/utils/importRestaurantData';
 import { useAuth } from '@/hooks/useAuth';
-import LocationMap from '@/components/ui/LocationMap';
 import { MapPin, List } from 'lucide-react';
+import { getCurrentUserLocation } from '@/services/api/mapApi';
+import GoogleMapView from '@/components/ui/GoogleMapView';
+import { getAllZomatoRestaurants } from '@/utils/zomatoData';
+import { getRestaurantRecommendations } from '@/utils/recommendationEngine';
 
 const RestaurantList: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -21,6 +23,9 @@ const RestaurantList: React.FC = () => {
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [filteredRestaurants, setFilteredRestaurants] = useState<Restaurant[]>([]);
   const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
+  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [recommendedRestaurants, setRecommendedRestaurants] = useState<Restaurant[]>([]);
 
   const [filters, setFilters] = useState<FilterOptions>({
     cuisine: [],
@@ -32,46 +37,85 @@ const RestaurantList: React.FC = () => {
   const [sortBy, setSortBy] = useState('relevance');
   
   useEffect(() => {
-    const importedRestaurants = importRestaurants();
-    const allRestaurants = [...mockRestaurants, ...importedRestaurants];
-    
-    const uniqueRestaurants = allRestaurants.reduce((acc, current) => {
-      const x = acc.find(item => item.id === current.id);
-      if (!x) {
-        return acc.concat([current]);
-      } else {
-        return acc;
+    // Load Zomato restaurant data
+    try {
+      const zomatoRestaurants = getAllZomatoRestaurants();
+      setRestaurants(zomatoRestaurants);
+      setFilteredRestaurants(zomatoRestaurants);
+      
+      // Get user location
+      const fetchLocation = async () => {
+        try {
+          const location = await getCurrentUserLocation();
+          setUserLocation(location);
+          
+          // Generate recommendations based on user location
+          const recommended = getRestaurantRecommendations(
+            zomatoRestaurants,
+            location.lat,
+            location.lng,
+            undefined, // No cuisine filter initially
+            3.5, // Min rating
+            10, // Max distance km
+            10, // Top N results
+            2 // Max per locality
+          );
+          
+          setRecommendedRestaurants(recommended);
+        } catch (error) {
+          console.error('Error getting user location:', error);
+          // Default to Mumbai, India
+          const defaultLocation = { lat: 19.076, lng: 72.8777 };
+          setUserLocation(defaultLocation);
+          
+          // Generate recommendations based on default location
+          const recommended = getRestaurantRecommendations(
+            zomatoRestaurants,
+            defaultLocation.lat,
+            defaultLocation.lng
+          );
+          
+          setRecommendedRestaurants(recommended);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      
+      fetchLocation();
+      
+      // Apply filters from URL params
+      const cuisineParam = searchParams.get('cuisine');
+      if (cuisineParam) {
+        setFilters(prev => ({
+          ...prev,
+          cuisine: [cuisineParam as CuisineType]
+        }));
       }
-    }, [] as Restaurant[]);
-    
-    setRestaurants(uniqueRestaurants);
-    setFilteredRestaurants(uniqueRestaurants);
-    
-    const cuisineParam = searchParams.get('cuisine');
-    if (cuisineParam) {
-      setFilters(prev => ({
-        ...prev,
-        cuisine: [cuisineParam as CuisineType]
-      }));
-    }
-    
-    const priceParam = searchParams.get('price');
-    if (priceParam) {
-      setFilters(prev => ({
-        ...prev,
-        price: [priceParam as PriceRange]
-      }));
-    }
-    
-    const sortParam = searchParams.get('sort');
-    if (sortParam) {
-      setSortBy(sortParam);
+      
+      const priceParam = searchParams.get('price');
+      if (priceParam) {
+        setFilters(prev => ({
+          ...prev,
+          price: [priceParam as PriceRange]
+        }));
+      }
+      
+      const sortParam = searchParams.get('sort');
+      if (sortParam) {
+        setSortBy(sortParam);
+      }
+    } catch (error) {
+      console.error("Error loading restaurant data:", error);
+      toast.error("Failed to load restaurant data");
+      setIsLoading(false);
     }
 
-    toast.info("Showing Indian restaurants and markets in your area");
+    toast.info("Showing Indian restaurants in your area");
   }, [searchParams]);
   
   useEffect(() => {
+    if (!restaurants.length) return;
+    
     let result = [...restaurants];
     
     if (filters.cuisine.length > 0) {
@@ -100,12 +144,46 @@ const RestaurantList: React.FC = () => {
       );
     }
     
+    // Add distance if user location is available
+    if (userLocation) {
+      result = result.map(restaurant => ({
+        ...restaurant,
+        distance: calculateDistance(
+          userLocation.lat,
+          userLocation.lng,
+          restaurant.location.lat,
+          restaurant.location.lng
+        )
+      }));
+    }
+    
     switch (sortBy) {
       case 'rating':
         result.sort((a, b) => b.rating - a.rating);
         break;
       case 'reviews':
         result.sort((a, b) => b.reviewCount - a.reviewCount);
+        break;
+      case 'distance':
+        if (userLocation) {
+          result.sort((a, b) => {
+            const distanceA = calculateDistance(
+              userLocation.lat,
+              userLocation.lng,
+              a.location.lat,
+              a.location.lng
+            );
+            
+            const distanceB = calculateDistance(
+              userLocation.lat,
+              userLocation.lng,
+              b.location.lat,
+              b.location.lng
+            );
+            
+            return distanceA - distanceB;
+          });
+        }
         break;
       case 'priceAsc':
         result.sort((a, b) => {
@@ -122,7 +200,7 @@ const RestaurantList: React.FC = () => {
     }
     
     setFilteredRestaurants(result);
-  }, [restaurants, filters, sortBy]);
+  }, [restaurants, filters, sortBy, userLocation]);
   
   const handleFilterChange = (newFilters: FilterOptions) => {
     setFilters(newFilters);
@@ -134,6 +212,24 @@ const RestaurantList: React.FC = () => {
   
   const handleRestaurantSelect = (id: string) => {
     navigate(`/restaurant/${id}`);
+  };
+
+  const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
+    const R = 6371; // Earth's radius in km
+    const dLat = deg2rad(lat2 - lat1);
+    const dLon = deg2rad(lon2 - lon1);
+    
+    const a = 
+      Math.sin(dLat/2) * Math.sin(dLat/2) +
+      Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
+      Math.sin(dLon/2) * Math.sin(dLon/2);
+    
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c;
+  };
+
+  const deg2rad = (deg: number): number => {
+    return deg * (Math.PI/180);
   };
   
   return (
@@ -150,6 +246,24 @@ const RestaurantList: React.FC = () => {
             <div className="mb-8">
               <SearchBar showButton />
             </div>
+            
+            {!isLoading && recommendedRestaurants.length > 0 && (
+              <div className="mb-10">
+                <h2 className="mb-4 text-xl font-medium text-gray-900">
+                  Recommended for You
+                </h2>
+                <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                  {recommendedRestaurants.slice(0, 4).map((restaurant) => (
+                    <RestaurantCard
+                      key={restaurant.id}
+                      restaurant={restaurant}
+                      isFavorite={isFavorite(restaurant.id)}
+                      onFavoriteToggle={toggleFavorite}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
             
             <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
               <div className="flex items-center gap-2">
@@ -187,6 +301,7 @@ const RestaurantList: React.FC = () => {
                   <option value="relevance">Relevance</option>
                   <option value="rating">Rating</option>
                   <option value="reviews">Review Count</option>
+                  <option value="distance">Distance</option>
                   <option value="priceAsc">Price: Low to High</option>
                   <option value="priceDesc">Price: High to Low</option>
                 </select>
@@ -204,8 +319,9 @@ const RestaurantList: React.FC = () => {
               <div className="lg:col-span-3">
                 {viewMode === 'map' ? (
                   <div className="mb-6">
-                    <LocationMap 
+                    <GoogleMapView 
                       restaurants={filteredRestaurants} 
+                      userLocation={userLocation || undefined}
                       onSelectRestaurant={handleRestaurantSelect} 
                       className="h-[500px]"
                     />

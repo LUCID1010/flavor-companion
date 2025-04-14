@@ -1,7 +1,8 @@
 
 import { toast } from "sonner";
 import { Restaurant } from "@/types";
-import { getAllRestaurants, calculateDistance } from "./restaurantApi";
+import { getAllZomatoRestaurants } from "@/utils/zomatoData";
+import { getRestaurantRecommendations } from "@/utils/recommendationEngine";
 
 // Interface for location data
 export interface UserLocation {
@@ -12,39 +13,20 @@ export interface UserLocation {
 // Get nearby restaurants within a given radius
 export const getNearbyRestaurants = (
   userLocation: UserLocation, 
-  radius: number = 5 // Default 5km radius
+  radius: number = 5, // Default 5km radius
+  cuisineKeyword?: string,
+  minRating: number = 3.5
 ): Restaurant[] => {
   try {
-    const restaurants = getAllRestaurants();
-    
-    // Calculate distances and filter by radius
-    return restaurants.filter(restaurant => {
-      const distance = calculateDistance(
-        userLocation.lat,
-        userLocation.lng,
-        restaurant.location.lat,
-        restaurant.location.lng
-      );
-      
-      return distance <= radius;
-    }).sort((a, b) => {
-      // Sort by distance
-      const distA = calculateDistance(
-        userLocation.lat,
-        userLocation.lng,
-        a.location.lat,
-        a.location.lng
-      );
-      
-      const distB = calculateDistance(
-        userLocation.lat,
-        userLocation.lng,
-        b.location.lat,
-        b.location.lng
-      );
-      
-      return distA - distB;
-    });
+    const restaurants = getAllZomatoRestaurants();
+    return getRestaurantRecommendations(
+      restaurants,
+      userLocation.lat,
+      userLocation.lng,
+      cuisineKeyword,
+      minRating,
+      radius
+    );
   } catch (error) {
     console.error("Error getting nearby restaurants:", error);
     toast.error("Failed to find nearby restaurants");
@@ -82,7 +64,7 @@ export const getCurrentUserLocation = (): Promise<UserLocation> => {
 // Search for restaurants by location name
 export const searchRestaurantsByLocation = (locationName: string): Restaurant[] => {
   try {
-    const restaurants = getAllRestaurants();
+    const restaurants = getAllZomatoRestaurants();
     const searchTerm = locationName.toLowerCase();
     
     return restaurants.filter(restaurant => 
@@ -103,7 +85,7 @@ export const getDistanceToRestaurant = (
   restaurantId: string
 ): number | null => {
   try {
-    const restaurants = getAllRestaurants();
+    const restaurants = getAllZomatoRestaurants();
     const restaurant = restaurants.find(r => r.id === restaurantId);
     
     if (!restaurant) return null;
@@ -120,8 +102,29 @@ export const getDistanceToRestaurant = (
   }
 };
 
+// Calculate distance between two points
+const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
+  const R = 6371; // Earth's radius in kilometers
+  const dLat = deg2rad(lat2 - lat1);
+  const dLon = deg2rad(lon2 - lon1);
+  
+  const a = 
+    Math.sin(dLat/2) * Math.sin(dLat/2) +
+    Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
+    Math.sin(dLon/2) * Math.sin(dLon/2);
+  
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  const distance = R * c; // Distance in km
+  
+  return distance;
+};
+
+// Convert degrees to radians
+const deg2rad = (deg: number): number => {
+  return deg * (Math.PI/180);
+};
+
 // Generate a static map URL for a specific location
-// In a real app this would use Google Maps or similar API
 export const getStaticMapUrl = (
   latitude: number, 
   longitude: number,
@@ -129,9 +132,14 @@ export const getStaticMapUrl = (
   height: number = 300,
   zoom: number = 15
 ): string => {
-  // This is a placeholder - in a real app you would use Google Maps or similar service
-  // return `https://maps.googleapis.com/maps/api/staticmap?center=${latitude},${longitude}&zoom=${zoom}&size=${width}x${height}&markers=color:red%7C${latitude},${longitude}&key=YOUR_API_KEY`;
+  // You would replace this with your actual Google Maps API key
+  const apiKey = "YOUR_GOOGLE_MAPS_API_KEY";
   
-  // For now, return a placeholder map image
-  return `https://via.placeholder.com/${width}x${height}?text=Map+Location+(${latitude.toFixed(4)},${longitude.toFixed(4)})`;
+  if (apiKey === "YOUR_GOOGLE_MAPS_API_KEY") {
+    // Return placeholder image if no API key
+    return `https://via.placeholder.com/${width}x${height}?text=Map+Location+(${latitude.toFixed(4)},${longitude.toFixed(4)})`;
+  }
+  
+  // Generate Google Maps static API URL
+  return `https://maps.googleapis.com/maps/api/staticmap?center=${latitude},${longitude}&zoom=${zoom}&size=${width}x${height}&markers=color:red%7C${latitude},${longitude}&key=${apiKey}`;
 };
