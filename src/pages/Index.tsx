@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Utensils, MapPin, Star, Clock } from 'lucide-react';
@@ -16,6 +15,16 @@ const Index: React.FC = () => {
   
   const [featuredRestaurants, setFeaturedRestaurants] = useState([]);
   const [popularRestaurants, setPopularRestaurants] = useState([]);
+
+  const handleSearch = (query: string, location: string) => {
+    // Build the URL with search parameters
+    const params = new URLSearchParams();
+    if (query) params.append('q', query);
+    if (location) params.append('loc', location);
+    
+    // Navigate to the restaurants page with the search parameters
+    window.location.href = `/restaurants?${params.toString()}`;
+  };
   
   useEffect(() => {
     // Get featured and popular restaurants
@@ -63,7 +72,12 @@ const Index: React.FC = () => {
           </p>
           
           <div className="w-full max-w-4xl animate-scale-in">
-            <SearchBar variant="large" showButton />
+            <SearchBar 
+              variant="large" 
+              showButton 
+              onSearch={handleSearch} 
+              disableNavigation={true} 
+            />
           </div>
           
           <div className="mt-12 flex flex-wrap items-center justify-center gap-8 text-gray-700 sm:gap-12 animate-fade-in">

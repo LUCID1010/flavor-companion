@@ -8,4 +8,7 @@ if (!import.meta.env.VITE_RAPIDAPI_KEY) {
   console.warn("Warning: VITE_RAPIDAPI_KEY is not set in .env file. API calls may fail.");
 }
 
-createRoot(document.getElementById("root")!).render(<App />);
+const root = createRoot(document.getElementById("root")!);
+
+// Render directly without any wrapping
+root.render(<App />);

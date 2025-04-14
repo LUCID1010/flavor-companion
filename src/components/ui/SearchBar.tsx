@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Search, MapPin, ChevronRight } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 
 interface SearchBarProps {
@@ -11,6 +11,7 @@ interface SearchBarProps {
   initialLocation?: string;
   onSearch?: (query: string, location: string) => void;
   showButton?: boolean;
+  disableNavigation?: boolean;
 }
 
 const SearchBar: React.FC<SearchBarProps> = ({
@@ -20,18 +21,22 @@ const SearchBar: React.FC<SearchBarProps> = ({
   initialLocation = '',
   onSearch,
   showButton = true,
+  disableNavigation = false,
 }) => {
   const [query, setQuery] = useState(initialQuery);
   const [location, setLocation] = useState(initialLocation);
-  const navigate = useNavigate();
+  
+  // Conditionally use navigate only if we're not disabling navigation
+  // This prevents the useNavigate hook from being called outside Router context
+  const navigate = !disableNavigation ? useNavigate() : null;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
     if (onSearch) {
       onSearch(query, location);
-    } else {
-      // If no onSearch prop is provided, navigate to search page
+    } else if (navigate) {
+      // Only navigate if navigate is available
       const params = new URLSearchParams();
       if (query) params.append('q', query);
       if (location) params.append('loc', location);
