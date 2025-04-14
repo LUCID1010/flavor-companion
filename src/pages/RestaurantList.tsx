@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from "sonner";
@@ -11,7 +10,7 @@ import { CuisineType, FilterOptions, PriceRange, Restaurant } from '@/types';
 import { useAuth } from '@/hooks/useAuth';
 import { MapPin, List } from 'lucide-react';
 import { getCurrentUserLocation } from '@/services/api/mapApi';
-import GoogleMapView from '@/components/ui/GoogleMapView';
+import LeafletMap from '@/components/ui/LeafletMap';
 import { getAllZomatoRestaurants } from '@/utils/zomatoData';
 import { getRestaurantRecommendations } from '@/utils/recommendationEngine';
 
@@ -319,7 +318,7 @@ const RestaurantList: React.FC = () => {
               <div className="lg:col-span-3">
                 {viewMode === 'map' ? (
                   <div className="mb-6">
-                    <GoogleMapView 
+                    <LeafletMap 
                       restaurants={filteredRestaurants} 
                       userLocation={userLocation || undefined}
                       onSelectRestaurant={handleRestaurantSelect} 

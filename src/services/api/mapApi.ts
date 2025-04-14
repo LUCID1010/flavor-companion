@@ -1,8 +1,7 @@
-
 import { toast } from "sonner";
 import { Restaurant } from "@/types";
 import { getAllZomatoRestaurants } from "@/utils/zomatoData";
-import { getRestaurantRecommendations } from "@/utils/recommendationEngine";
+import { getRestaurantRecommendations, getPersonalizedRecommendations } from "@/utils/recommendationEngine";
 
 // Interface for location data
 export interface UserLocation {
@@ -15,17 +14,33 @@ export const getNearbyRestaurants = (
   userLocation: UserLocation, 
   radius: number = 5, // Default 5km radius
   cuisineKeyword?: string,
-  minRating: number = 3.5
+  minRating: number = 3.5,
+  favoriteIds?: string[]
 ): Restaurant[] => {
   try {
     const restaurants = getAllZomatoRestaurants();
+    
+    // Use personalized recommendations if favorites are provided
+    if (favoriteIds && favoriteIds.length > 0) {
+      return getPersonalizedRecommendations(
+        restaurants,
+        userLocation.lat,
+        userLocation.lng,
+        favoriteIds,
+        20 // Return more results for personalized recommendations
+      );
+    }
+    
+    // Otherwise use standard recommendations
     return getRestaurantRecommendations(
       restaurants,
       userLocation.lat,
       userLocation.lng,
       cuisineKeyword,
       minRating,
-      radius
+      radius,
+      20, // Return more results
+      3 // Allow more per locality
     );
   } catch (error) {
     console.error("Error getting nearby restaurants:", error);
@@ -56,7 +71,7 @@ export const getCurrentUserLocation = (): Promise<UserLocation> => {
         toast.error("Unable to retrieve your location");
         reject(error);
       },
-      { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
     );
   });
 };
@@ -122,24 +137,4 @@ const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: numbe
 // Convert degrees to radians
 const deg2rad = (deg: number): number => {
   return deg * (Math.PI/180);
-};
-
-// Generate a static map URL for a specific location
-export const getStaticMapUrl = (
-  latitude: number, 
-  longitude: number,
-  width: number = 400,
-  height: number = 300,
-  zoom: number = 15
-): string => {
-  // You would replace this with your actual Google Maps API key
-  const apiKey = "YOUR_GOOGLE_MAPS_API_KEY";
-  
-  if (apiKey === "YOUR_GOOGLE_MAPS_API_KEY") {
-    // Return placeholder image if no API key
-    return `https://via.placeholder.com/${width}x${height}?text=Map+Location+(${latitude.toFixed(4)},${longitude.toFixed(4)})`;
-  }
-  
-  // Generate Google Maps static API URL
-  return `https://maps.googleapis.com/maps/api/staticmap?center=${latitude},${longitude}&zoom=${zoom}&size=${width}x${height}&markers=color:red%7C${latitude},${longitude}&key=${apiKey}`;
 };

@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { HeartIcon, MapPinIcon } from 'lucide-react';
+import { HeartIcon, MapPinIcon, Star } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import RatingStars from './RatingStars';
 import { Restaurant } from '@/types';
@@ -28,6 +28,25 @@ const RestaurantCard: React.FC<RestaurantCardProps> = ({
       onFavoriteToggle(restaurant.id);
     }
   };
+  
+  // Get random image based on cuisine
+  const getCuisineImage = () => {
+    const cuisine = restaurant.cuisine[0]?.toLowerCase() || '';
+    
+    if (cuisine.includes('north indian')) {
+      return `https://source.unsplash.com/random/800x600/?north,indian,food`;
+    } else if (cuisine.includes('south indian')) {
+      return `https://source.unsplash.com/random/800x600/?south,indian,food`;
+    } else if (cuisine.includes('chinese')) {
+      return `https://source.unsplash.com/random/800x600/?chinese,food`;
+    } else if (cuisine.includes('italian')) {
+      return `https://source.unsplash.com/random/800x600/?italian,food`;
+    } else if (cuisine.includes('continental')) {
+      return `https://source.unsplash.com/random/800x600/?continental,food`;
+    } else {
+      return `https://source.unsplash.com/random/800x600/?indian,food,${restaurant.name}`;
+    }
+  };
 
   return (
     <Link
@@ -45,10 +64,14 @@ const RestaurantCard: React.FC<RestaurantCardProps> = ({
         )}
       >
         <img
-          src={restaurant.photos[0]}
+          src={restaurant.photos?.[0] || getCuisineImage()}
           alt={restaurant.name}
           className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
           loading="lazy"
+          onError={(e) => {
+            // If image fails to load, replace with cuisine-specific image
+            e.currentTarget.src = getCuisineImage();
+          }}
         />
         
         <button
@@ -124,6 +147,13 @@ const RestaurantCard: React.FC<RestaurantCardProps> = ({
                 </span>
               ))}
             </div>
+          </div>
+        )}
+        
+        {/* Show distance if available */}
+        {restaurant.distanceKm !== undefined && (
+          <div className="mt-2 flex items-center text-xs text-foodie-600">
+            <span>{restaurant.distanceKm.toFixed(1)} km away</span>
           </div>
         )}
       </div>

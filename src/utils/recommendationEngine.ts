@@ -34,6 +34,7 @@ const deg2rad = (deg: number): number => {
 
 /**
  * Gets restaurant recommendations based on user location and preferences
+ * Enhanced with personalization and location awareness
  */
 export const getRestaurantRecommendations = (
   restaurants: Restaurant[],
@@ -71,10 +72,55 @@ export const getRestaurantRecommendations = (
       );
     }
 
-    // Sort by distance
-    filtered.sort((a, b) => a.distanceKm - b.distanceKm);
+    // If there are too few results, loosen the distance constraint
+    if (filtered.length < 5) {
+      filtered = restaurantsWithDistance.filter(restaurant => 
+        restaurant.rating >= minRating && restaurant.distanceKm <= maxDistanceKm * 2
+      );
+      
+      if (cuisineKeyword) {
+        filtered = filtered.filter(restaurant => 
+          restaurant.cuisine.some(cuisine => 
+            cuisine.toLowerCase().includes(cuisineKeyword.toLowerCase())
+          )
+        );
+      }
+    }
 
-    // Limit by locality
+    // If still too few, loosen the rating constraint
+    if (filtered.length < 5) {
+      filtered = restaurantsWithDistance.filter(restaurant => 
+        restaurant.rating >= minRating - 0.5 && restaurant.distanceKm <= maxDistanceKm * 2
+      );
+      
+      if (cuisineKeyword) {
+        filtered = filtered.filter(restaurant => 
+          restaurant.cuisine.some(cuisine => 
+            cuisine.toLowerCase().includes(cuisineKeyword.toLowerCase())
+          )
+        );
+      }
+    }
+
+    // Calculate score based on rating and distance
+    filtered = filtered.map(restaurant => {
+      const distanceScore = 1 - (restaurant.distanceKm / maxDistanceKm); // 0-1, closer is better
+      const ratingScore = (restaurant.rating - minRating) / (5 - minRating); // 0-1, higher rating is better
+      const popularityScore = Math.min(restaurant.reviewCount / 1000, 1); // 0-1, more reviews is better
+      
+      // Weight: rating (50%), distance (30%), popularity (20%)
+      const score = (ratingScore * 0.5) + (distanceScore * 0.3) + (popularityScore * 0.2);
+      
+      return {
+        ...restaurant,
+        score
+      };
+    });
+
+    // Sort by combined score
+    filtered.sort((a, b) => b.score - a.score);
+
+    // Limit by locality to ensure diversity
     const localities = new Map<string, number>();
     const limitedByLocality = filtered.filter(restaurant => {
       const locality = restaurant.city;
@@ -93,5 +139,86 @@ export const getRestaurantRecommendations = (
   } catch (error) {
     console.error("Error generating recommendations:", error);
     return [];
+  }
+};
+
+// Function to get personalized recommendations based on user history
+export const getPersonalizedRecommendations = (
+  restaurants: Restaurant[],
+  userLat: number,
+  userLon: number,
+  favoriteRestaurantIds: string[] = [],
+  topN: number = 10
+): Restaurant[] => {
+  try {
+    // Get favorite restaurants
+    const favoriteRestaurants = restaurants.filter(r => 
+      favoriteRestaurantIds.includes(r.id)
+    );
+    
+    // If no favorites, return standard recommendations
+    if (favoriteRestaurants.length === 0) {
+      return getRestaurantRecommendations(
+        restaurants, 
+        userLat, 
+        userLon, 
+        undefined, 
+        3.5, 
+        15, 
+        topN
+      );
+    }
+    
+    // Extract favorite cuisines
+    const favoriteCuisines = new Map<string, number>();
+    favoriteRestaurants.forEach(restaurant => {
+      restaurant.cuisine.forEach(cuisine => {
+        const count = favoriteCuisines.get(cuisine) || 0;
+        favoriteCuisines.set(cuisine, count + 1);
+      });
+    });
+    
+    // Sort cuisines by frequency
+    const sortedCuisines = [...favoriteCuisines.entries()]
+      .sort((a, b) => b[1] - a[1])
+      .map(([cuisine]) => cuisine);
+    
+    // Get top cuisine
+    const topCuisine = sortedCuisines[0];
+    
+    // Get recommendations based on top cuisine preference
+    const cuisineRecommendations = getRestaurantRecommendations(
+      restaurants,
+      userLat,
+      userLon,
+      topCuisine,
+      3.5,
+      10,
+      topN / 2,
+      2
+    );
+    
+    // Get general recommendations excluding those in cuisine recommendations
+    const cuisineRecommendationIds = cuisineRecommendations.map(r => r.id);
+    const otherRestaurants = restaurants.filter(r => 
+      !cuisineRecommendationIds.includes(r.id) && !favoriteRestaurantIds.includes(r.id)
+    );
+    
+    const generalRecommendations = getRestaurantRecommendations(
+      otherRestaurants,
+      userLat,
+      userLon,
+      undefined,
+      4.0,
+      12,
+      topN / 2,
+      1
+    );
+    
+    // Combine recommendations
+    return [...cuisineRecommendations, ...generalRecommendations].slice(0, topN);
+  } catch (error) {
+    console.error("Error generating personalized recommendations:", error);
+    return getRestaurantRecommendations(restaurants, userLat, userLon);
   }
 };

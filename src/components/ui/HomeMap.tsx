@@ -7,7 +7,7 @@ import { Restaurant } from '@/types';
 import { getCurrentUserLocation, UserLocation } from '@/services/api/mapApi';
 import { getAllZomatoRestaurants } from '@/utils/zomatoData';
 import { getRestaurantRecommendations } from '@/utils/recommendationEngine';
-import GoogleMapView from './GoogleMapView';
+import LeafletMap from './LeafletMap';
 
 interface HomeMapProps {
   className?: string;
@@ -129,7 +129,7 @@ const HomeMap: React.FC<HomeMapProps> = ({
   
   return (
     <div className={`relative rounded-lg border border-gray-200 shadow-md overflow-hidden ${className}`}>
-      <GoogleMapView 
+      <LeafletMap 
         restaurants={restaurants}
         userLocation={userLocation}
         onSelectRestaurant={handleSelectRestaurant}
