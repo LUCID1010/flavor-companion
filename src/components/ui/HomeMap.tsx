@@ -36,9 +36,11 @@ const HomeMap: React.FC<HomeMapProps> = ({
           const userLoc = await getCurrentUserLocation();
           location = userLoc;
           setUserLocation(userLoc);
+          toast.success('Found your location');
         } catch (err) {
           console.log('Using default location (Mumbai)');
           setUserLocation(location);
+          toast.info('Using Mumbai as default location');
         }
         
         // Get Zomato restaurants
@@ -50,13 +52,22 @@ const HomeMap: React.FC<HomeMapProps> = ({
           location.lat,
           location.lng,
           undefined, // No cuisine filter
-          3.5, // Min rating
-          20, // 20km radius
+          3.0, // Min rating - lowered to show more restaurants
+          25, // 25km radius - increased to show more restaurants
           10, // Top 10 results
           2 // Max 2 per locality
         );
         
         setRestaurants(nearby);
+        
+        if (nearby.length === 0) {
+          toast.info("No restaurants found nearby. Showing random selections.");
+          // If no restaurants nearby, show some random ones
+          const randomRestaurants = allRestaurants
+            .sort(() => 0.5 - Math.random())
+            .slice(0, 5);
+          setRestaurants(randomRestaurants);
+        }
       } catch (err) {
         console.error('Error fetching data:', err);
         setError('Could not load restaurant data');
@@ -86,6 +97,7 @@ const HomeMap: React.FC<HomeMapProps> = ({
       toast.success('Location updated successfully');
     } catch (error) {
       console.error('Error getting location:', error);
+      toast.error('Could not access your location');
     } finally {
       setIsLoading(false);
     }
@@ -134,7 +146,13 @@ const HomeMap: React.FC<HomeMapProps> = ({
         userLocation={userLocation}
         onSelectRestaurant={handleSelectRestaurant}
         className="h-full"
+        showPopupOnLoad={restaurants.length <= 3} // Show popups if only a few restaurants
       />
+      {restaurants.length > 0 && (
+        <div className="absolute bottom-3 left-3 z-10 bg-white rounded-full px-3 py-1 text-xs font-medium shadow-md">
+          {restaurants.length} restaurants found
+        </div>
+      )}
     </div>
   );
 };
