@@ -1,4 +1,3 @@
-
 export interface Restaurant {
   id: string;
   name: string;
@@ -31,6 +30,8 @@ export interface Restaurant {
   cuisineSpecialty?: string;
   isNew?: boolean;
   lastUpdated?: Date;
+  distanceKm?: number;
+  score?: number;
 }
 
 export type PriceRange = '$' | '$$' | '$$$' | '$$$$';

@@ -1,20 +1,10 @@
+
 import React, { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { toast } from 'sonner';
 import { Restaurant } from '@/types';
 import { calculateDistance } from '@/utils/recommendationEngine';
-
-// Make sure the marker icons work with webpack/vite
-// This is needed because Leaflet's default markers look for images in a specific path
-useEffect(() => {
-  delete L.Icon.Default.prototype._getIconUrl;
-  L.Icon.Default.mergeOptions({
-    iconRetinaUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png',
-    iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
-    shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
-  });
-}, []);
 
 interface LeafletMapProps {
   restaurants: Restaurant[];
@@ -87,6 +77,16 @@ const LeafletMap: React.FC<LeafletMapProps> = ({
         mapRef.current = null;
       }
     };
+  }, []);
+
+  // Fix Leaflet icon issue
+  useEffect(() => {
+    delete L.Icon.Default.prototype._getIconUrl;
+    L.Icon.Default.mergeOptions({
+      iconRetinaUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png',
+      iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
+      shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
+    });
   }, []);
 
   // Add markers when restaurants or user location changes

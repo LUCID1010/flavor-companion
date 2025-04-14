@@ -103,7 +103,7 @@ export const getRestaurantRecommendations = (
     }
 
     // Calculate score based on rating and distance
-    filtered = filtered.map(restaurant => {
+    const scoredRestaurants = filtered.map(restaurant => {
       const distanceScore = 1 - (restaurant.distanceKm / maxDistanceKm); // 0-1, closer is better
       const ratingScore = (restaurant.rating - minRating) / (5 - minRating); // 0-1, higher rating is better
       const popularityScore = Math.min(restaurant.reviewCount / 1000, 1); // 0-1, more reviews is better
@@ -118,11 +118,11 @@ export const getRestaurantRecommendations = (
     });
 
     // Sort by combined score
-    filtered.sort((a, b) => b.score - a.score);
+    scoredRestaurants.sort((a, b) => b.score - a.score);
 
     // Limit by locality to ensure diversity
     const localities = new Map<string, number>();
-    const limitedByLocality = filtered.filter(restaurant => {
+    const limitedByLocality = scoredRestaurants.filter(restaurant => {
       const locality = restaurant.city;
       const count = localities.get(locality) || 0;
       
