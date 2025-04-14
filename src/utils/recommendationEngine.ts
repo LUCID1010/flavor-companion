@@ -1,4 +1,3 @@
-
 import { Restaurant } from "@/types";
 
 /**
@@ -58,6 +57,9 @@ export const getRestaurantRecommendations = (
       )
     }));
 
+    // Sort by distance first to get closest restaurants
+    restaurantsWithDistance.sort((a, b) => a.distanceKm - b.distanceKm);
+
     // Filter by rating and distance
     let filtered = restaurantsWithDistance.filter(restaurant => 
       restaurant.rating >= minRating && restaurant.distanceKm <= maxDistanceKm
@@ -72,25 +74,10 @@ export const getRestaurantRecommendations = (
       );
     }
 
-    // If there are too few results, loosen the distance constraint
+    // If there are too few results, loosen the rating constraint but keep distance constraint
     if (filtered.length < 5) {
       filtered = restaurantsWithDistance.filter(restaurant => 
-        restaurant.rating >= minRating && restaurant.distanceKm <= maxDistanceKm * 2
-      );
-      
-      if (cuisineKeyword) {
-        filtered = filtered.filter(restaurant => 
-          restaurant.cuisine.some(cuisine => 
-            cuisine.toLowerCase().includes(cuisineKeyword.toLowerCase())
-          )
-        );
-      }
-    }
-
-    // If still too few, loosen the rating constraint
-    if (filtered.length < 5) {
-      filtered = restaurantsWithDistance.filter(restaurant => 
-        restaurant.rating >= minRating - 0.5 && restaurant.distanceKm <= maxDistanceKm * 2
+        restaurant.rating >= minRating - 0.5 && restaurant.distanceKm <= maxDistanceKm
       );
       
       if (cuisineKeyword) {
@@ -104,12 +91,19 @@ export const getRestaurantRecommendations = (
 
     // Calculate score based on rating and distance
     const scoredRestaurants = filtered.map(restaurant => {
-      const distanceScore = 1 - (restaurant.distanceKm / maxDistanceKm); // 0-1, closer is better
-      const ratingScore = (restaurant.rating - minRating) / (5 - minRating); // 0-1, higher rating is better
-      const popularityScore = Math.min(restaurant.reviewCount / 1000, 1); // 0-1, more reviews is better
+      // Distance score (0-1, closer is better)
+      // Within 5km, closer gets higher score
+      const distanceScore = 1 - (restaurant.distanceKm / maxDistanceKm); 
       
-      // Weight: rating (50%), distance (30%), popularity (20%)
-      const score = (ratingScore * 0.5) + (distanceScore * 0.3) + (popularityScore * 0.2);
+      // Rating score (0-1, higher rating is better)
+      const ratingScore = (restaurant.rating - minRating) / (5 - minRating); 
+      
+      // Popularity score (0-1, more reviews is better)
+      const popularityScore = Math.min(restaurant.reviewCount / 1000, 1); 
+      
+      // Weight factors: distance (50%), rating (30%), popularity (20%)
+      // Distance is weighted highest since we want nearby restaurants
+      const score = (distanceScore * 0.5) + (ratingScore * 0.3) + (popularityScore * 0.2);
       
       return {
         ...restaurant,
@@ -156,7 +150,7 @@ export const getPersonalizedRecommendations = (
       favoriteRestaurantIds.includes(r.id)
     );
     
-    // If no favorites, return standard recommendations
+    // If no favorites, return standard recommendations with 5km radius
     if (favoriteRestaurants.length === 0) {
       return getRestaurantRecommendations(
         restaurants, 
@@ -164,7 +158,7 @@ export const getPersonalizedRecommendations = (
         userLon, 
         undefined, 
         3.5, 
-        15, 
+        5,
         topN
       );
     }
@@ -186,14 +180,14 @@ export const getPersonalizedRecommendations = (
     // Get top cuisine
     const topCuisine = sortedCuisines[0];
     
-    // Get recommendations based on top cuisine preference
+    // Get recommendations based on top cuisine preference within 5km
     const cuisineRecommendations = getRestaurantRecommendations(
       restaurants,
       userLat,
       userLon,
       topCuisine,
       3.5,
-      10,
+      5,
       topN / 2,
       2
     );
@@ -210,7 +204,7 @@ export const getPersonalizedRecommendations = (
       userLon,
       undefined,
       4.0,
-      12,
+      5,
       topN / 2,
       1
     );
