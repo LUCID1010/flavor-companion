@@ -1,7 +1,6 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Eye, EyeOff, Loader2 } from 'lucide-react';
+import { Eye, EyeOff, Loader2, CheckCircle } from 'lucide-react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { cn } from '@/lib/utils';
@@ -9,7 +8,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 
-type AuthMode = 'login' | 'register';
+type AuthMode = 'login' | 'register' | 'confirmation';
 
 const Auth: React.FC = () => {
   const [mode, setMode] = useState<AuthMode>('login');
@@ -48,7 +47,13 @@ const Auth: React.FC = () => {
     };
     
     checkForAuthRedirect();
-  }, [user, navigate]);
+
+    // Check for registration success query param
+    const searchParams = new URLSearchParams(location.search);
+    if (searchParams.get('registrationSuccess') === 'true') {
+      setMode('confirmation');
+    }
+  }, [user, navigate, location]);
   
   const toggleMode = () => {
     setMode(mode === 'login' ? 'register' : 'login');
@@ -72,6 +77,12 @@ const Auth: React.FC = () => {
         await login(formData.email, formData.password);
       } else {
         await register(formData.name, formData.email, formData.password);
+        // Change mode to confirmation after successful registration
+        setMode('confirmation');
+        // Add registration success to URL for page refreshes
+        const url = new URL(window.location.href);
+        url.searchParams.set('registrationSuccess', 'true');
+        window.history.pushState({}, '', url);
       }
     } catch (error) {
       // Error is already handled in useAuth hook
@@ -118,6 +129,39 @@ const Auth: React.FC = () => {
       setIsLoading(false);
     }
   };
+  
+  // Render registration confirmation page
+  if (mode === 'confirmation') {
+    return (
+      <div className="flex min-h-screen flex-col">
+        <Navbar />
+        
+        <main className="flex flex-1 items-center justify-center py-16">
+          <div className="foodie-container flex justify-center">
+            <div className="relative w-full max-w-md rounded-xl border border-gray-100 bg-white p-6 shadow-elegant sm:p-8 md:p-10">
+              <div className="flex flex-col items-center text-center">
+                <div className="mb-4 rounded-full bg-green-100 p-3">
+                  <CheckCircle className="h-8 w-8 text-green-600" />
+                </div>
+                <h1 className="mb-2 text-2xl font-semibold text-gray-900">Registration Complete!</h1>
+                <p className="mb-6 text-gray-600">
+                  Your account has been created successfully. You can now sign in to explore great Indian restaurants.
+                </p>
+                <button
+                  onClick={() => setMode('login')}
+                  className="w-full rounded-lg bg-foodie-500 py-3 font-medium text-white shadow-button transition-all hover:bg-foodie-600 active:bg-foodie-700"
+                >
+                  Continue to Sign In
+                </button>
+              </div>
+            </div>
+          </div>
+        </main>
+        
+        <Footer />
+      </div>
+    );
+  }
   
   return (
     <div className="flex min-h-screen flex-col">

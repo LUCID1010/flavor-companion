@@ -60,10 +60,16 @@ export const useRestaurantsByCity = (city?: string) => {
     queryKey: ['restaurants-by-city', city],
     queryFn: () => {
       const allRestaurants = getAllZomatoRestaurants();
+      // Filter out non-Indian restaurants
+      const indianRestaurants = allRestaurants.filter(restaurant => 
+        restaurant.country === 'India' || 
+        ['Chandigarh', 'Mumbai', 'New Delhi', 'Bangalore', 'Pune', 'Agra', 'Chennai', 'Lucknow', 'Jaipur'].includes(restaurant.city)
+      );
+      
       if (!city || city === 'All') {
-        return allRestaurants;
+        return indianRestaurants;
       }
-      return allRestaurants.filter(restaurant => restaurant.city === city);
+      return indianRestaurants.filter(restaurant => restaurant.city === city);
     },
   });
 };
@@ -76,7 +82,13 @@ export const useTopRatedRestaurants = (limit: number = 10) => {
     queryKey: ['top-rated-restaurants', limit],
     queryFn: () => {
       const allRestaurants = getAllZomatoRestaurants();
-      return allRestaurants
+      // Filter out non-Indian restaurants
+      const indianRestaurants = allRestaurants.filter(restaurant => 
+        restaurant.country === 'India' || 
+        ['Chandigarh', 'Mumbai', 'New Delhi', 'Bangalore', 'Pune', 'Agra', 'Chennai', 'Lucknow', 'Jaipur'].includes(restaurant.city)
+      );
+      
+      return indianRestaurants
         .sort((a, b) => b.rating - a.rating)
         .slice(0, limit);
     },
@@ -91,19 +103,34 @@ export const useRestaurantsGroupedByCity = () => {
     queryKey: ['restaurants-grouped-by-city'],
     queryFn: () => {
       const allRestaurants = getAllZomatoRestaurants();
-      const cities = [...new Set(allRestaurants.map(r => r.city))].sort();
+      // Filter out non-Indian restaurants
+      const indianRestaurants = allRestaurants.filter(restaurant => 
+        restaurant.country === 'India' || 
+        ['Chandigarh', 'Mumbai', 'New Delhi', 'Bangalore', 'Pune', 'Agra', 'Chennai', 'Lucknow', 'Jaipur'].includes(restaurant.city)
+      );
+      
+      // Sort cities alphabetically but ensure our targeted Indian cities come first
+      const targetCities = ['Chandigarh', 'Mumbai', 'New Delhi', 'Bangalore', 'Pune', 'Agra', 'Chennai', 'Lucknow', 'Jaipur'];
+      const cities = [...new Set(indianRestaurants.map(r => r.city))];
+      const sortedCities = [...targetCities.filter(city => cities.includes(city))];
+      
+      // Add any remaining Indian cities
+      cities.forEach(city => {
+        if (!sortedCities.includes(city)) {
+          sortedCities.push(city);
+        }
+      });
       
       const groupedRestaurants: Record<string, Restaurant[]> = {};
       
-      cities.forEach(city => {
-        groupedRestaurants[city] = allRestaurants.filter(r => r.city === city);
+      sortedCities.forEach(city => {
+        groupedRestaurants[city] = indianRestaurants.filter(r => r.city === city);
       });
       
       return {
-        cities,
+        cities: sortedCities,
         restaurantsByCity: groupedRestaurants
       };
     },
   });
 };
-

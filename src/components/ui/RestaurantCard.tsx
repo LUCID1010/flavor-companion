@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { HeartIcon, MapPinIcon } from 'lucide-react';
@@ -33,66 +34,82 @@ const RestaurantCard: React.FC<RestaurantCardProps> = ({
     const cuisine = restaurant.cuisine[0]?.toLowerCase() || '';
     const restaurantName = restaurant.name.toLowerCase();
     const city = restaurant.city.toLowerCase();
-    const random = Math.floor(Math.random() * 5) + 1; // Add variety to images
+    const random = Math.floor(Math.random() * 10) + 1; // More variety with random number 1-10
     
-    // More specific Indian cuisine categories for better image matching
+    // More specific Indian cuisine categories
     if (cuisine.includes('north indian') || restaurantName.includes('punjabi')) {
-      return `https://source.unsplash.com/random/800x600/?north,indian,food,curry,butter,chicken,${random}`;
+      return `https://source.unsplash.com/featured/800x600/?indian,north,indian,food,curry,butter,chicken,${random}`;
     } else if (cuisine.includes('south indian') || restaurantName.includes('dosa')) {
-      return `https://source.unsplash.com/random/800x600/?south,indian,dosa,idli,sambar,${random}`;
+      return `https://source.unsplash.com/featured/800x600/?south,indian,dosa,idli,sambar,${random}`;
     } else if (cuisine.includes('chinese')) {
-      return `https://source.unsplash.com/random/800x600/?chinese,noodles,dimsum,${random}`;
+      return `https://source.unsplash.com/featured/800x600/?indian,chinese,noodles,manchurian,${random}`;
     } else if (cuisine.includes('italian')) {
-      return `https://source.unsplash.com/random/800x600/?italian,pasta,pizza,${random}`;
+      return `https://source.unsplash.com/featured/800x600/?indian,italian,pasta,pizza,${random}`;
     } else if (cuisine.includes('continental')) {
-      return `https://source.unsplash.com/random/800x600/?continental,steak,${random}`;
+      return `https://source.unsplash.com/featured/800x600/?indian,continental,cuisine,${random}`;
     } else if (cuisine.includes('punjabi') || restaurantName.includes('dhaba')) {
-      return `https://source.unsplash.com/random/800x600/?punjabi,food,butter,chicken,lassi,${random}`;
+      return `https://source.unsplash.com/featured/800x600/?punjabi,food,butter,chicken,lassi,${random}`;
     } else if (cuisine.includes('cafe')) {
-      return `https://source.unsplash.com/random/800x600/?cafe,coffee,pastry,${random}`;
+      return `https://source.unsplash.com/featured/800x600/?indian,cafe,coffee,pastry,${random}`;
     } else if (cuisine.includes('fast food')) {
-      return `https://source.unsplash.com/random/800x600/?fast,food,burger,${random}`;
+      return `https://source.unsplash.com/featured/800x600/?indian,fast,food,burger,${random}`;
     } else if (cuisine.includes('bakery')) {
-      return `https://source.unsplash.com/random/800x600/?bakery,bread,cake,${random}`;
+      return `https://source.unsplash.com/featured/800x600/?indian,bakery,bread,cake,${random}`;
     } else if (cuisine.includes('mughlai')) {
-      return `https://source.unsplash.com/random/800x600/?mughlai,biryani,kebab,${random}`;
+      return `https://source.unsplash.com/featured/800x600/?mughlai,biryani,kebab,${random}`;
     } else if (cuisine.includes('street food')) {
-      return `https://source.unsplash.com/random/800x600/?indian,street,food,chaat,${random}`;
+      return `https://source.unsplash.com/featured/800x600/?indian,street,food,chaat,${random}`;
     } else if (cuisine.includes('seafood')) {
-      return `https://source.unsplash.com/random/800x600/?seafood,fish,curry,${random}`;
+      return `https://source.unsplash.com/featured/800x600/?indian,seafood,fish,curry,${random}`;
     } else if (cuisine.includes('goan')) {
-      return `https://source.unsplash.com/random/800x600/?goan,fish,curry,${random}`;
+      return `https://source.unsplash.com/featured/800x600/?goan,fish,curry,${random}`;
     } else if (cuisine.includes('kashmiri')) {
-      return `https://source.unsplash.com/random/800x600/?kashmiri,food,rogan,josh,${random}`;
+      return `https://source.unsplash.com/featured/800x600/?kashmiri,food,rogan,josh,${random}`;
     } else if (cuisine.includes('hyderabadi')) {
-      return `https://source.unsplash.com/random/800x600/?hyderabadi,biryani,haleem,${random}`;
+      return `https://source.unsplash.com/featured/800x600/?hyderabadi,biryani,haleem,${random}`;
     } else if (cuisine.includes('rajasthani')) {
-      return `https://source.unsplash.com/random/800x600/?rajasthani,dal,baati,${random}`;
+      return `https://source.unsplash.com/featured/800x600/?rajasthani,dal,baati,${random}`;
     } else if (cuisine.includes('bengali')) {
-      return `https://source.unsplash.com/random/800x600/?bengali,fish,curry,${random}`;
-    } else if (cuisine.includes('lucknowi') || city === 'lucknow') {
-      return `https://source.unsplash.com/random/800x600/?lucknowi,biryani,kebab,galouti,${random}`;
-    } else if (cuisine.includes('chettinad') || city === 'chennai') {
-      return `https://source.unsplash.com/random/800x600/?chettinad,south,indian,curry,${random}`;
+      return `https://source.unsplash.com/featured/800x600/?bengali,fish,curry,${random}`;
     } else if (cuisine.includes('biryani')) {
-      return `https://source.unsplash.com/random/800x600/?biryani,rice,indian,${random}`;
+      return `https://source.unsplash.com/featured/800x600/?biryani,rice,indian,${random}`;
     } else if (city === 'mumbai' || city === 'pune') {
-      return `https://source.unsplash.com/random/800x600/?maharashtrian,pav,bhaji,vada,${random}`;
+      return `https://source.unsplash.com/featured/800x600/?mumbai,maharashtrian,pav,bhaji,vada,${random}`;
     } else if (city === 'delhi' || city === 'new delhi') {
-      return `https://source.unsplash.com/random/800x600/?delhi,street,food,chole,bhature,${random}`;
+      return `https://source.unsplash.com/featured/800x600/?delhi,street,food,chole,bhature,${random}`;
     } else if (city === 'bangalore') {
-      return `https://source.unsplash.com/random/800x600/?bangalore,karnataka,food,${random}`;
+      return `https://source.unsplash.com/featured/800x600/?bangalore,karnataka,food,dosa,${random}`;
     } else if (city === 'chandigarh') {
-      return `https://source.unsplash.com/random/800x600/?chandigarh,punjabi,food,${random}`;
+      return `https://source.unsplash.com/featured/800x600/?chandigarh,punjabi,food,butter,chicken,${random}`;
     } else if (city === 'agra') {
-      return `https://source.unsplash.com/random/800x600/?agra,north,indian,petha,${random}`;
+      return `https://source.unsplash.com/featured/800x600/?agra,north,indian,petha,${random}`;
     } else if (city === 'jaipur') {
-      return `https://source.unsplash.com/random/800x600/?jaipur,rajasthani,food,dal,baati,${random}`;
+      return `https://source.unsplash.com/featured/800x600/?jaipur,rajasthani,food,dal,baati,${random}`;
+    } else if (city === 'chennai') {
+      return `https://source.unsplash.com/featured/800x600/?chennai,tamil,food,idli,dosa,${random}`;
+    } else if (city === 'lucknow') {
+      return `https://source.unsplash.com/featured/800x600/?lucknow,awadhi,kebab,biryani,${random}`;
     } else {
       // More specific request to ensure we get food images
-      return `https://source.unsplash.com/random/800x600/?indian,restaurant,food,dish,${restaurant.name.split(' ')[0]}`;
+      return `https://source.unsplash.com/featured/800x600/?indian,food,dish,${restaurant.name.split(' ')[0]},${random}`;
     }
   };
+
+  const getImageWithFallback = () => {
+    // Primary image source
+    const primaryImageSrc = restaurant.photos?.[0] || getCuisineImage();
+    const backupImageSrc = getCuisineImage();
+    
+    return {
+      src: primaryImageSrc,
+      onError: (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+        e.currentTarget.src = backupImageSrc;
+        e.currentTarget.onerror = null; // Prevent infinite loop if even the backup fails
+      }
+    };
+  };
+
+  const imageProps = getImageWithFallback();
 
   return (
     <Link
@@ -110,14 +127,11 @@ const RestaurantCard: React.FC<RestaurantCardProps> = ({
         )}
       >
         <img
-          src={restaurant.photos?.[0] || getCuisineImage()}
+          src={imageProps.src}
           alt={restaurant.name}
           className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
           loading="lazy"
-          onError={(e) => {
-            // If image fails to load, replace with cuisine-specific image
-            e.currentTarget.src = getCuisineImage();
-          }}
+          onError={imageProps.onError}
         />
         
         <button
