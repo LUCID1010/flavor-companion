@@ -1,6 +1,7 @@
+
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Loader2, Navigation } from 'lucide-react';
+import { Loader2, Navigation, MapPin } from 'lucide-react';
 import { toast } from 'sonner';
 import { Restaurant } from '@/types';
 import { getCurrentUserLocation, UserLocation } from '@/services/api/mapApi';
@@ -36,12 +37,19 @@ const HomeMap: React.FC<HomeMapProps> = ({
         // Default location based on prop or use Chandigarh
         let location: UserLocation = chandigarhLocation;
         
-        if (defaultLocation === 'user') {
+        // Always try to get user location for display on map
+        if (navigator.geolocation) {
           try {
             const userLoc = await getCurrentUserLocation();
-            location = userLoc;
             setUserLocation(userLoc);
-            toast.success('Found your location');
+            
+            if (defaultLocation === 'user') {
+              location = userLoc;
+              toast.success('Found your location');
+            } else {
+              // Still set user location but use Chandigarh as center
+              toast.info('Showing Chandigarh restaurants, but your location is visible on the map');
+            }
           } catch (err) {
             console.log('Using Chandigarh as default location');
             setUserLocation(chandigarhLocation);
@@ -121,9 +129,17 @@ const HomeMap: React.FC<HomeMapProps> = ({
     try {
       setIsLoading(true);
       
-      // Chandigarh location
-      const chandigarhLocation: UserLocation = { lat: 30.7333, lng: 76.7794 };
-      setUserLocation(chandigarhLocation);
+      // Try to get actual user location
+      try {
+        const userLoc = await getCurrentUserLocation();
+        setUserLocation(userLoc);
+        toast.success('Found your location');
+      } catch (err) {
+        // Fallback to Chandigarh location
+        const chandigarhLocation: UserLocation = { lat: 30.7333, lng: 76.7794 };
+        setUserLocation(chandigarhLocation);
+        toast.info('Using Chandigarh as default location');
+      }
       
       // Get Zomato restaurants
       const allRestaurants = getAllZomatoRestaurants();
@@ -139,8 +155,8 @@ const HomeMap: React.FC<HomeMapProps> = ({
         // If no restaurants in Chandigarh, get nearby ones in 5km radius
         const nearby = getRestaurantRecommendations(
           allRestaurants,
-          chandigarhLocation.lat,
-          chandigarhLocation.lng,
+          userLocation?.lat || 30.7333,
+          userLocation?.lng || 76.7794,
           undefined,
           3.0,
           5, // 5km radius
@@ -209,13 +225,29 @@ const HomeMap: React.FC<HomeMapProps> = ({
         </div>
       )}
       
-      <div className="absolute top-3 right-3 z-10">
+      <div className="absolute top-3 right-3 z-10 flex space-x-2">
         <button
           onClick={handleGetLocation}
           className="flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-xs font-medium shadow-md hover:bg-gray-50"
         >
           <Navigation size={14} className="text-foodie-500" />
           <span>Refresh Restaurants</span>
+        </button>
+        
+        <button
+          onClick={async () => {
+            try {
+              const userLoc = await getCurrentUserLocation();
+              setUserLocation(userLoc);
+              toast.success('Updated your location on the map');
+            } catch (err) {
+              toast.error('Could not access your location');
+            }
+          }}
+          className="flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-xs font-medium shadow-md hover:bg-gray-50"
+        >
+          <MapPin size={14} className="text-blue-600" />
+          <span>My Location</span>
         </button>
       </div>
     </div>

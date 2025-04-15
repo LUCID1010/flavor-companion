@@ -29,22 +29,32 @@ const RestaurantCard: React.FC<RestaurantCardProps> = ({
     }
   };
   
-  // Get random image based on cuisine
+  // Enhanced function to get cuisine-specific images
   const getCuisineImage = () => {
     const cuisine = restaurant.cuisine[0]?.toLowerCase() || '';
+    const random = Math.floor(Math.random() * 5) + 1; // Add variety to images
     
     if (cuisine.includes('north indian')) {
-      return `https://source.unsplash.com/random/800x600/?north,indian,food`;
+      return `https://source.unsplash.com/random/800x600/?north,indian,food,curry,${random}`;
     } else if (cuisine.includes('south indian')) {
-      return `https://source.unsplash.com/random/800x600/?south,indian,food`;
+      return `https://source.unsplash.com/random/800x600/?south,indian,dosa,idli,${random}`;
     } else if (cuisine.includes('chinese')) {
-      return `https://source.unsplash.com/random/800x600/?chinese,food`;
+      return `https://source.unsplash.com/random/800x600/?chinese,noodles,dimsum,${random}`;
     } else if (cuisine.includes('italian')) {
-      return `https://source.unsplash.com/random/800x600/?italian,food`;
+      return `https://source.unsplash.com/random/800x600/?italian,pasta,pizza,${random}`;
     } else if (cuisine.includes('continental')) {
-      return `https://source.unsplash.com/random/800x600/?continental,food`;
+      return `https://source.unsplash.com/random/800x600/?continental,steak,${random}`;
+    } else if (cuisine.includes('punjabi')) {
+      return `https://source.unsplash.com/random/800x600/?punjabi,food,butter,chicken,${random}`;
+    } else if (cuisine.includes('cafe')) {
+      return `https://source.unsplash.com/random/800x600/?cafe,coffee,pastry,${random}`;
+    } else if (cuisine.includes('fast food')) {
+      return `https://source.unsplash.com/random/800x600/?fast,food,burger,${random}`;
+    } else if (cuisine.includes('bakery')) {
+      return `https://source.unsplash.com/random/800x600/?bakery,bread,cake,${random}`;
     } else {
-      return `https://source.unsplash.com/random/800x600/?indian,food,${restaurant.name}`;
+      // More specific request to ensure we get food images
+      return `https://source.unsplash.com/random/800x600/?indian,restaurant,food,dish,${restaurant.name.split(' ')[0]}`;
     }
   };
 

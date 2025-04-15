@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -103,17 +104,25 @@ const LeafletMap: React.FC<LeafletMapProps> = ({
     }
 
     if (userLocation) {
+      // Enhance user location marker with a pulsing effect
       const userIcon = L.divIcon({
-        html: `<div style="background-color: #2563eb; width: 15px; height: 15px; border-radius: 50%; border: 2px solid white;"></div>`,
+        html: `
+          <div class="relative">
+            <div class="absolute inset-0 rounded-full bg-blue-500 opacity-30 animate-ping"></div>
+            <div class="relative bg-blue-600 w-6 h-6 rounded-full border-2 border-white"></div>
+          </div>
+        `,
         className: 'user-location-marker',
-        iconSize: [15, 15],
-        iconAnchor: [7.5, 7.5]
+        iconSize: [24, 24],
+        iconAnchor: [12, 12]
       });
       
-      L.marker([userLocation.lat, userLocation.lng], { icon: userIcon })
-        .addTo(map)
-        .bindPopup('Current Location')
-        .openPopup();
+      const userMarker = L.marker([userLocation.lat, userLocation.lng], { icon: userIcon })
+        .addTo(map);
+        
+      userMarker.bindPopup(
+        `<div class="text-center font-medium">You are here</div>`
+      ).openPopup();
     }
 
     restaurants.forEach(restaurant => {
@@ -258,6 +267,12 @@ const LeafletMap: React.FC<LeafletMapProps> = ({
             <span className="inline-block w-3 h-3 rounded-full bg-[#e11d48]"></span>
             <span>Other Restaurants</span>
           </div>
+          {userLocation && (
+            <div className="flex items-center gap-2 mt-1">
+              <span className="inline-block w-3 h-3 rounded-full bg-blue-600"></span>
+              <span>Your Location</span>
+            </div>
+          )}
         </div>
       )}
     </div>
