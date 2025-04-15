@@ -17,6 +17,7 @@ import TermsOfService from "./pages/TermsOfService";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import CookiePolicy from "./pages/CookiePolicy";
 import 'leaflet/dist/leaflet.css';
+import 'leaflet/dist/leaflet.css';
 
 // Create a new QueryClient instance
 const queryClient = new QueryClient();
