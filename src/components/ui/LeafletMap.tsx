@@ -85,6 +85,41 @@ const LeafletMap: React.FC<LeafletMapProps> = ({
     });
   }, []);
 
+  // Enhanced function to get cuisine-specific images
+  const getCuisineImage = (restaurant: Restaurant) => {
+    const cuisine = restaurant.cuisine[0]?.toLowerCase() || '';
+    const random = Math.floor(Math.random() * 5) + 1; // Add variety to images
+    
+    if (cuisine.includes('north indian')) {
+      return `https://source.unsplash.com/random/800x600/?north,indian,food,curry,${random}`;
+    } else if (cuisine.includes('south indian')) {
+      return `https://source.unsplash.com/random/800x600/?south,indian,dosa,idli,${random}`;
+    } else if (cuisine.includes('chinese')) {
+      return `https://source.unsplash.com/random/800x600/?chinese,noodles,dimsum,${random}`;
+    } else if (cuisine.includes('italian')) {
+      return `https://source.unsplash.com/random/800x600/?italian,pasta,pizza,${random}`;
+    } else if (cuisine.includes('continental')) {
+      return `https://source.unsplash.com/random/800x600/?continental,steak,${random}`;
+    } else if (cuisine.includes('punjabi')) {
+      return `https://source.unsplash.com/random/800x600/?punjabi,food,butter,chicken,${random}`;
+    } else if (cuisine.includes('cafe')) {
+      return `https://source.unsplash.com/random/800x600/?cafe,coffee,pastry,${random}`;
+    } else if (cuisine.includes('fast food')) {
+      return `https://source.unsplash.com/random/800x600/?fast,food,burger,${random}`;
+    } else if (cuisine.includes('bakery')) {
+      return `https://source.unsplash.com/random/800x600/?bakery,bread,cake,${random}`;
+    } else if (cuisine.includes('mughlai')) {
+      return `https://source.unsplash.com/random/800x600/?mughlai,biryani,kebab,${random}`;
+    } else if (cuisine.includes('street food')) {
+      return `https://source.unsplash.com/random/800x600/?indian,street,food,chaat,${random}`;
+    } else if (cuisine.includes('seafood')) {
+      return `https://source.unsplash.com/random/800x600/?seafood,fish,curry,${random}`;
+    } else {
+      // More specific request to ensure we get food images
+      return `https://source.unsplash.com/random/800x600/?indian,restaurant,food,dish,${restaurant.name.split(' ')[0]}`;
+    }
+  };
+
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !isMapLoaded) return;
@@ -148,14 +183,14 @@ const LeafletMap: React.FC<LeafletMapProps> = ({
       
       const restaurantImage = restaurant.photos && restaurant.photos.length > 0 
         ? restaurant.photos[0] 
-        : `https://source.unsplash.com/random/100x100/?indian,food,${restaurant.cuisine[0]}`;
+        : getCuisineImage(restaurant);
       
       let popupContent = `
         <div style="max-width: 220px; padding: 0; border-radius: 8px; overflow: hidden;">
           <div style="height: 100px; overflow: hidden;">
             <img src="${restaurantImage}" alt="${restaurant.name}" 
               style="width: 100%; height: 100%; object-fit: cover;" 
-              onerror="this.onerror=null; this.src='https://source.unsplash.com/random/100x100/?restaurant,food';"
+              onerror="this.onerror=null; this.src='${getCuisineImage(restaurant)}';"
             />
           </div>
           <div style="padding: 8px 12px;">

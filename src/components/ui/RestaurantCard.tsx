@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { HeartIcon, MapPinIcon, Star } from 'lucide-react';
+import { HeartIcon, MapPinIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import RatingStars from './RatingStars';
 import { Restaurant } from '@/types';
@@ -52,6 +52,22 @@ const RestaurantCard: React.FC<RestaurantCardProps> = ({
       return `https://source.unsplash.com/random/800x600/?fast,food,burger,${random}`;
     } else if (cuisine.includes('bakery')) {
       return `https://source.unsplash.com/random/800x600/?bakery,bread,cake,${random}`;
+    } else if (cuisine.includes('mughlai')) {
+      return `https://source.unsplash.com/random/800x600/?mughlai,biryani,kebab,${random}`;
+    } else if (cuisine.includes('street food')) {
+      return `https://source.unsplash.com/random/800x600/?indian,street,food,chaat,${random}`;
+    } else if (cuisine.includes('seafood')) {
+      return `https://source.unsplash.com/random/800x600/?seafood,fish,curry,${random}`;
+    } else if (cuisine.includes('goan')) {
+      return `https://source.unsplash.com/random/800x600/?goan,fish,curry,${random}`;
+    } else if (cuisine.includes('kashmiri')) {
+      return `https://source.unsplash.com/random/800x600/?kashmiri,food,rogan,josh,${random}`;
+    } else if (cuisine.includes('hyderabadi')) {
+      return `https://source.unsplash.com/random/800x600/?hyderabadi,biryani,haleem,${random}`;
+    } else if (cuisine.includes('rajasthani')) {
+      return `https://source.unsplash.com/random/800x600/?rajasthani,dal,baati,${random}`;
+    } else if (cuisine.includes('bengali')) {
+      return `https://source.unsplash.com/random/800x600/?bengali,fish,curry,${random}`;
     } else {
       // More specific request to ensure we get food images
       return `https://source.unsplash.com/random/800x600/?indian,restaurant,food,dish,${restaurant.name.split(' ')[0]}`;
