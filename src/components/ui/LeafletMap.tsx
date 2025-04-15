@@ -85,23 +85,26 @@ const LeafletMap: React.FC<LeafletMapProps> = ({
     });
   }, []);
 
-  // Enhanced function to get cuisine-specific images
+  // Enhanced function to get cuisine-specific images with more variety for Indian dishes
   const getCuisineImage = (restaurant: Restaurant) => {
     const cuisine = restaurant.cuisine[0]?.toLowerCase() || '';
+    const restaurantName = restaurant.name.toLowerCase();
+    const city = restaurant.city.toLowerCase();
     const random = Math.floor(Math.random() * 5) + 1; // Add variety to images
     
-    if (cuisine.includes('north indian')) {
-      return `https://source.unsplash.com/random/800x600/?north,indian,food,curry,${random}`;
-    } else if (cuisine.includes('south indian')) {
-      return `https://source.unsplash.com/random/800x600/?south,indian,dosa,idli,${random}`;
+    // More specific Indian cuisine categories for better image matching
+    if (cuisine.includes('north indian') || restaurantName.includes('punjabi')) {
+      return `https://source.unsplash.com/random/800x600/?north,indian,food,curry,butter,chicken,${random}`;
+    } else if (cuisine.includes('south indian') || restaurantName.includes('dosa')) {
+      return `https://source.unsplash.com/random/800x600/?south,indian,dosa,idli,sambar,${random}`;
     } else if (cuisine.includes('chinese')) {
       return `https://source.unsplash.com/random/800x600/?chinese,noodles,dimsum,${random}`;
     } else if (cuisine.includes('italian')) {
       return `https://source.unsplash.com/random/800x600/?italian,pasta,pizza,${random}`;
     } else if (cuisine.includes('continental')) {
       return `https://source.unsplash.com/random/800x600/?continental,steak,${random}`;
-    } else if (cuisine.includes('punjabi')) {
-      return `https://source.unsplash.com/random/800x600/?punjabi,food,butter,chicken,${random}`;
+    } else if (cuisine.includes('punjabi') || restaurantName.includes('dhaba')) {
+      return `https://source.unsplash.com/random/800x600/?punjabi,food,butter,chicken,lassi,${random}`;
     } else if (cuisine.includes('cafe')) {
       return `https://source.unsplash.com/random/800x600/?cafe,coffee,pastry,${random}`;
     } else if (cuisine.includes('fast food')) {
@@ -114,6 +117,24 @@ const LeafletMap: React.FC<LeafletMapProps> = ({
       return `https://source.unsplash.com/random/800x600/?indian,street,food,chaat,${random}`;
     } else if (cuisine.includes('seafood')) {
       return `https://source.unsplash.com/random/800x600/?seafood,fish,curry,${random}`;
+    } else if (cuisine.includes('goan')) {
+      return `https://source.unsplash.com/random/800x600/?goan,fish,curry,${random}`;
+    } else if (cuisine.includes('kashmiri')) {
+      return `https://source.unsplash.com/random/800x600/?kashmiri,food,rogan,josh,${random}`;
+    } else if (cuisine.includes('hyderabadi')) {
+      return `https://source.unsplash.com/random/800x600/?hyderabadi,biryani,haleem,${random}`;
+    } else if (cuisine.includes('rajasthani')) {
+      return `https://source.unsplash.com/random/800x600/?rajasthani,dal,baati,${random}`;
+    } else if (cuisine.includes('bengali')) {
+      return `https://source.unsplash.com/random/800x600/?bengali,fish,curry,${random}`;
+    } else if (city === 'mumbai' || city === 'pune') {
+      return `https://source.unsplash.com/random/800x600/?maharashtrian,pav,bhaji,vada,${random}`;
+    } else if (city === 'delhi' || city === 'new delhi') {
+      return `https://source.unsplash.com/random/800x600/?delhi,street,food,chole,bhature,${random}`;
+    } else if (city === 'bangalore') {
+      return `https://source.unsplash.com/random/800x600/?bangalore,karnataka,food,${random}`;
+    } else if (city === 'chandigarh') {
+      return `https://source.unsplash.com/random/800x600/?chandigarh,punjabi,food,${random}`;
     } else {
       // More specific request to ensure we get food images
       return `https://source.unsplash.com/random/800x600/?indian,restaurant,food,dish,${restaurant.name.split(' ')[0]}`;
@@ -163,8 +184,21 @@ const LeafletMap: React.FC<LeafletMapProps> = ({
     restaurants.forEach(restaurant => {
       const isHighlighted = highlightedRestaurantId && highlightedRestaurantId === restaurant.id;
       
+      // Use different colors for different cities
+      let iconColor = '#e11d48'; // Default (red)
+      
+      // Assign colors based on city
+      if (restaurant.city === 'Chandigarh') {
+        iconColor = '#ff4500'; // Orange-red
+      } else if (restaurant.city === 'Mumbai' || restaurant.city === 'Pune') {
+        iconColor = '#2563eb'; // Blue
+      } else if (restaurant.city === 'Delhi' || restaurant.city === 'New Delhi') {
+        iconColor = '#16a34a'; // Green
+      } else if (restaurant.city === 'Bangalore') {
+        iconColor = '#9333ea'; // Purple
+      }
+      
       const iconSize = isHighlighted ? 20 : 14;
-      const iconColor = restaurant.city === 'Chandigarh' ? '#ff4500' : '#e11d48';
       const borderWidth = isHighlighted ? 3 : 2;
       
       const restaurantIcon = L.divIcon({
@@ -225,7 +259,7 @@ const LeafletMap: React.FC<LeafletMapProps> = ({
       popupContent += `
         <button 
           id="view-${restaurant.id}" 
-          style="width: 100%; margin-top: 8px; padding: 6px; background: ${restaurant.city === 'Chandigarh' ? '#ff4500' : '#e11d48'}; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 500; font-size: 13px;"
+          style="width: 100%; margin-top: 8px; padding: 6px; background: ${iconColor}; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 500; font-size: 13px;"
         >
           View Details
         </button>
@@ -240,9 +274,7 @@ const LeafletMap: React.FC<LeafletMapProps> = ({
       
       marker.bindPopup(popup);
       
-      if (isHighlighted || (showPopupOnLoad && restaurant.city === 'Chandigarh')) {
-        marker.openPopup();
-      } else if (showPopupOnLoad && restaurants.length <= 5) {
+      if (isHighlighted || (showPopupOnLoad && restaurants.length <= 5)) {
         marker.openPopup();
       }
       
@@ -297,6 +329,18 @@ const LeafletMap: React.FC<LeafletMapProps> = ({
           <div className="flex items-center gap-2">
             <span className="inline-block w-3 h-3 rounded-full bg-[#ff4500]"></span>
             <span>Chandigarh Restaurants</span>
+          </div>
+          <div className="flex items-center gap-2 mt-1">
+            <span className="inline-block w-3 h-3 rounded-full bg-[#2563eb]"></span>
+            <span>Mumbai/Pune Restaurants</span>
+          </div>
+          <div className="flex items-center gap-2 mt-1">
+            <span className="inline-block w-3 h-3 rounded-full bg-[#16a34a]"></span>
+            <span>Delhi Restaurants</span>
+          </div>
+          <div className="flex items-center gap-2 mt-1">
+            <span className="inline-block w-3 h-3 rounded-full bg-[#9333ea]"></span>
+            <span>Bangalore Restaurants</span>
           </div>
           <div className="flex items-center gap-2 mt-1">
             <span className="inline-block w-3 h-3 rounded-full bg-[#e11d48]"></span>
