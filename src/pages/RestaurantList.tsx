@@ -26,7 +26,21 @@ const RestaurantList: React.FC = () => {
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [recommendedRestaurants, setRecommendedRestaurants] = useState<Restaurant[]>([]);
-  const [chandigarhRestaurants, setChandigarhRestaurants] = useState<Restaurant[]>([]);
+  const [selectedCity, setSelectedCity] = useState<string>('All');
+  const [cityRestaurants, setCityRestaurants] = useState<Record<string, Restaurant[]>>({});
+  
+  const availableCities = [
+    'All', 
+    'Chandigarh', 
+    'Mumbai', 
+    'New Delhi', 
+    'Bangalore', 
+    'Pune', 
+    'Agra', 
+    'Chennai', 
+    'Lucknow', 
+    'Jaipur'
+  ];
 
   const [filters, setFilters] = useState<FilterOptions>({
     cuisine: [],
@@ -44,9 +58,16 @@ const RestaurantList: React.FC = () => {
       setRestaurants(zomatoRestaurants);
       setFilteredRestaurants(zomatoRestaurants);
       
-      // Filter Chandigarh restaurants specifically
-      const chandigarh = zomatoRestaurants.filter(r => r.city === 'Chandigarh');
-      setChandigarhRestaurants(chandigarh);
+      // Group restaurants by city
+      const restaurantsByCity: Record<string, Restaurant[]> = {};
+      
+      availableCities.forEach(city => {
+        if (city !== 'All') {
+          restaurantsByCity[city] = zomatoRestaurants.filter(r => r.city === city);
+        }
+      });
+      
+      setCityRestaurants(restaurantsByCity);
       
       // Get user location
       const fetchLocation = async () => {
@@ -113,19 +134,31 @@ const RestaurantList: React.FC = () => {
       if (sortParam) {
         setSortBy(sortParam);
       }
+      
+      // Check for city param
+      const cityParam = searchParams.get('city');
+      if (cityParam && availableCities.includes(cityParam)) {
+        setSelectedCity(cityParam);
+      }
+      
     } catch (error) {
       console.error("Error loading restaurant data:", error);
       toast.error("Failed to load restaurant data");
       setIsLoading(false);
     }
 
-    toast.info("Showing Indian restaurants in Chandigarh");
+    toast.info("Showing Indian restaurants across popular cities");
   }, [searchParams]);
   
   useEffect(() => {
     if (!restaurants.length) return;
     
+    // First filter by selected city
     let result = [...restaurants];
+    
+    if (selectedCity !== 'All') {
+      result = result.filter(restaurant => restaurant.city === selectedCity);
+    }
     
     if (filters.cuisine.length > 0) {
       result = result.filter(restaurant => 
@@ -209,7 +242,7 @@ const RestaurantList: React.FC = () => {
     }
     
     setFilteredRestaurants(result);
-  }, [restaurants, filters, sortBy, userLocation]);
+  }, [restaurants, filters, sortBy, userLocation, selectedCity]);
   
   const handleFilterChange = (newFilters: FilterOptions) => {
     setFilters(newFilters);
@@ -221,6 +254,18 @@ const RestaurantList: React.FC = () => {
   
   const handleRestaurantSelect = (id: string) => {
     navigate(`/restaurant/${id}`);
+  };
+  
+  const handleCityChange = (city: string) => {
+    setSelectedCity(city);
+    // Update URL params
+    const newSearchParams = new URLSearchParams(searchParams);
+    if (city === 'All') {
+      newSearchParams.delete('city');
+    } else {
+      newSearchParams.set('city', city);
+    }
+    navigate(`?${newSearchParams.toString()}`);
   };
 
   const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
@@ -249,28 +294,67 @@ const RestaurantList: React.FC = () => {
         <div className="bg-white py-8">
           <div className="foodie-container">
             <h1 className="mb-6 text-2xl font-semibold text-gray-900 sm:text-3xl">
-              Indian Restaurants in Chandigarh
+              {selectedCity === 'All' 
+                ? 'Indian Restaurants Across Popular Cities' 
+                : `Indian Restaurants in ${selectedCity}`}
             </h1>
             
             <div className="mb-8">
               <SearchBar showButton />
             </div>
             
-            {!isLoading && chandigarhRestaurants.length > 0 && (
-              <div className="mb-10">
-                <h2 className="mb-4 text-xl font-medium text-gray-900">
-                  Top Restaurants in Chandigarh
-                </h2>
-                <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                  {chandigarhRestaurants.slice(0, 4).map((restaurant) => (
-                    <RestaurantCard
-                      key={restaurant.id}
-                      restaurant={restaurant}
-                      isFavorite={isFavorite(restaurant.id)}
-                      onFavoriteToggle={toggleFavorite}
-                    />
-                  ))}
-                </div>
+            {/* City selector */}
+            <div className="mb-6 overflow-x-auto pb-2">
+              <div className="flex space-x-2">
+                {availableCities.map((city) => (
+                  <button
+                    key={city}
+                    onClick={() => handleCityChange(city)}
+                    className={`whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+                      selectedCity === city
+                        ? 'bg-foodie-500 text-white'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    {city}
+                  </button>
+                ))}
+              </div>
+            </div>
+            
+            {/* Featured restaurants for each city */}
+            {selectedCity === 'All' && !isLoading && (
+              <div className="space-y-10">
+                {availableCities.filter(city => city !== 'All').map((city) => (
+                  cityRestaurants[city] && cityRestaurants[city].length > 0 && (
+                    <div key={city} className="mb-10">
+                      <div className="mb-4 flex items-center justify-between">
+                        <h2 className="text-xl font-medium text-gray-900">
+                          Top Restaurants in {city}
+                        </h2>
+                        <button
+                          onClick={() => handleCityChange(city)}
+                          className="rounded-full bg-gray-100 px-4 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-200"
+                        >
+                          See all in {city}
+                        </button>
+                      </div>
+                      <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                        {cityRestaurants[city]
+                          .sort((a, b) => b.rating - a.rating)
+                          .slice(0, 4)
+                          .map((restaurant) => (
+                            <RestaurantCard
+                              key={restaurant.id}
+                              restaurant={restaurant}
+                              isFavorite={isFavorite(restaurant.id)}
+                              onFavoriteToggle={toggleFavorite}
+                            />
+                          ))}
+                      </div>
+                    </div>
+                  )
+                ))}
               </div>
             )}
             
@@ -329,18 +413,18 @@ const RestaurantList: React.FC = () => {
                 {viewMode === 'map' && userLocation ? (
                   <div className="mb-6">
                     <LeafletMap 
-                      restaurants={chandigarhRestaurants} 
+                      restaurants={filteredRestaurants} 
                       userLocation={userLocation}
                       onSelectRestaurant={handleRestaurantSelect} 
                       className="h-[500px]"
-                      showPopupOnLoad={true}
+                      showPopupOnLoad={filteredRestaurants.length <= 10}
                     />
                   </div>
                 ) : null}
                 
-                {chandigarhRestaurants.length > 0 ? (
+                {filteredRestaurants.length > 0 ? (
                   <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                    {chandigarhRestaurants.map((restaurant) => (
+                    {filteredRestaurants.map((restaurant) => (
                       <RestaurantCard
                         key={restaurant.id}
                         restaurant={restaurant}
@@ -352,7 +436,7 @@ const RestaurantList: React.FC = () => {
                 ) : (
                   <div className="rounded-lg border border-gray-200 bg-white p-8 text-center">
                     <h3 className="mb-2 text-lg font-medium text-gray-900">No restaurants found</h3>
-                    <p className="text-gray-600">Try adjusting your filters to see more results.</p>
+                    <p className="text-gray-600">Try adjusting your filters or selecting a different city.</p>
                   </div>
                 )}
               </div>
@@ -367,3 +451,4 @@ const RestaurantList: React.FC = () => {
 };
 
 export default RestaurantList;
+

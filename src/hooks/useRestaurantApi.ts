@@ -6,6 +6,8 @@ import {
   getRestaurantDetails,
   searchLocations
 } from "@/services/restaurantApi";
+import { getAllZomatoRestaurants } from "@/utils/zomatoData";
+import { Restaurant } from "@/types";
 
 /**
  * Hook to fetch supported languages
@@ -49,3 +51,59 @@ export const useLocationSearch = (query: string) => {
     enabled: !!query && query.length > 2, // Only search when query is at least 3 characters
   });
 };
+
+/**
+ * Hook to get all restaurants by city
+ */
+export const useRestaurantsByCity = (city?: string) => {
+  return useQuery({
+    queryKey: ['restaurants-by-city', city],
+    queryFn: () => {
+      const allRestaurants = getAllZomatoRestaurants();
+      if (!city || city === 'All') {
+        return allRestaurants;
+      }
+      return allRestaurants.filter(restaurant => restaurant.city === city);
+    },
+  });
+};
+
+/**
+ * Hook to get top-rated restaurants across all cities
+ */
+export const useTopRatedRestaurants = (limit: number = 10) => {
+  return useQuery({
+    queryKey: ['top-rated-restaurants', limit],
+    queryFn: () => {
+      const allRestaurants = getAllZomatoRestaurants();
+      return allRestaurants
+        .sort((a, b) => b.rating - a.rating)
+        .slice(0, limit);
+    },
+  });
+};
+
+/**
+ * Hook to get restaurants grouped by city
+ */
+export const useRestaurantsGroupedByCity = () => {
+  return useQuery({
+    queryKey: ['restaurants-grouped-by-city'],
+    queryFn: () => {
+      const allRestaurants = getAllZomatoRestaurants();
+      const cities = [...new Set(allRestaurants.map(r => r.city))].sort();
+      
+      const groupedRestaurants: Record<string, Restaurant[]> = {};
+      
+      cities.forEach(city => {
+        groupedRestaurants[city] = allRestaurants.filter(r => r.city === city);
+      });
+      
+      return {
+        cities,
+        restaurantsByCity: groupedRestaurants
+      };
+    },
+  });
+};
+

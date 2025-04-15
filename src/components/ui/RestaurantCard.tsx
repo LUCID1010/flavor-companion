@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { HeartIcon, MapPinIcon } from 'lucide-react';
@@ -71,6 +70,12 @@ const RestaurantCard: React.FC<RestaurantCardProps> = ({
       return `https://source.unsplash.com/random/800x600/?rajasthani,dal,baati,${random}`;
     } else if (cuisine.includes('bengali')) {
       return `https://source.unsplash.com/random/800x600/?bengali,fish,curry,${random}`;
+    } else if (cuisine.includes('lucknowi') || city === 'lucknow') {
+      return `https://source.unsplash.com/random/800x600/?lucknowi,biryani,kebab,galouti,${random}`;
+    } else if (cuisine.includes('chettinad') || city === 'chennai') {
+      return `https://source.unsplash.com/random/800x600/?chettinad,south,indian,curry,${random}`;
+    } else if (cuisine.includes('biryani')) {
+      return `https://source.unsplash.com/random/800x600/?biryani,rice,indian,${random}`;
     } else if (city === 'mumbai' || city === 'pune') {
       return `https://source.unsplash.com/random/800x600/?maharashtrian,pav,bhaji,vada,${random}`;
     } else if (city === 'delhi' || city === 'new delhi') {
@@ -79,6 +84,10 @@ const RestaurantCard: React.FC<RestaurantCardProps> = ({
       return `https://source.unsplash.com/random/800x600/?bangalore,karnataka,food,${random}`;
     } else if (city === 'chandigarh') {
       return `https://source.unsplash.com/random/800x600/?chandigarh,punjabi,food,${random}`;
+    } else if (city === 'agra') {
+      return `https://source.unsplash.com/random/800x600/?agra,north,indian,petha,${random}`;
+    } else if (city === 'jaipur') {
+      return `https://source.unsplash.com/random/800x600/?jaipur,rajasthani,food,dal,baati,${random}`;
     } else {
       // More specific request to ensure we get food images
       return `https://source.unsplash.com/random/800x600/?indian,restaurant,food,dish,${restaurant.name.split(' ')[0]}`;
@@ -137,6 +146,12 @@ const RestaurantCard: React.FC<RestaurantCardProps> = ({
             ))}
           </div>
         </div>
+        
+        <div className="absolute bottom-0 left-0 p-2">
+          <span className="rounded-full bg-black/70 px-2 py-0.5 text-xs font-medium text-white shadow-sm backdrop-blur-sm">
+            {restaurant.city}
+          </span>
+        </div>
       </div>
 
       <div className={cn(
@@ -187,7 +202,6 @@ const RestaurantCard: React.FC<RestaurantCardProps> = ({
           </div>
         )}
         
-        {/* Show distance if available */}
         {restaurant.distanceKm !== undefined && (
           <div className="mt-2 flex items-center text-xs text-foodie-600">
             <span>{restaurant.distanceKm.toFixed(1)} km away</span>
