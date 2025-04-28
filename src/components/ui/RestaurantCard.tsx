@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { HeartIcon, MapPinIcon } from 'lucide-react';
@@ -29,74 +28,46 @@ const RestaurantCard: React.FC<RestaurantCardProps> = ({
     }
   };
   
-  // Enhanced function to get cuisine-specific images with more variety for Indian dishes
   const getCuisineImage = () => {
     const cuisine = restaurant.cuisine[0]?.toLowerCase() || '';
     const restaurantName = restaurant.name.toLowerCase();
     const city = restaurant.city.toLowerCase();
-    const random = Math.floor(Math.random() * 10) + 1; // More variety with random number 1-10
     
-    // More specific Indian cuisine categories
+    const imageSize = '/800x600';
+    const baseUrl = 'https://images.pexels.com/photos';
+    
     if (cuisine.includes('north indian') || restaurantName.includes('punjabi')) {
-      return `https://source.unsplash.com/featured/800x600/?indian,north,indian,food,curry,butter,chicken,${random}`;
+      return `${baseUrl}/2474658${imageSize}`;
     } else if (cuisine.includes('south indian') || restaurantName.includes('dosa')) {
-      return `https://source.unsplash.com/featured/800x600/?south,indian,dosa,idli,sambar,${random}`;
+      return `${baseUrl}/3026808${imageSize}`;
     } else if (cuisine.includes('chinese')) {
-      return `https://source.unsplash.com/featured/800x600/?indian,chinese,noodles,manchurian,${random}`;
-    } else if (cuisine.includes('italian')) {
-      return `https://source.unsplash.com/featured/800x600/?indian,italian,pasta,pizza,${random}`;
-    } else if (cuisine.includes('continental')) {
-      return `https://source.unsplash.com/featured/800x600/?indian,continental,cuisine,${random}`;
-    } else if (cuisine.includes('punjabi') || restaurantName.includes('dhaba')) {
-      return `https://source.unsplash.com/featured/800x600/?punjabi,food,butter,chicken,lassi,${random}`;
-    } else if (cuisine.includes('cafe')) {
-      return `https://source.unsplash.com/featured/800x600/?indian,cafe,coffee,pastry,${random}`;
-    } else if (cuisine.includes('fast food')) {
-      return `https://source.unsplash.com/featured/800x600/?indian,fast,food,burger,${random}`;
-    } else if (cuisine.includes('bakery')) {
-      return `https://source.unsplash.com/featured/800x600/?indian,bakery,bread,cake,${random}`;
-    } else if (cuisine.includes('mughlai')) {
-      return `https://source.unsplash.com/featured/800x600/?mughlai,biryani,kebab,${random}`;
-    } else if (cuisine.includes('street food')) {
-      return `https://source.unsplash.com/featured/800x600/?indian,street,food,chaat,${random}`;
-    } else if (cuisine.includes('seafood')) {
-      return `https://source.unsplash.com/featured/800x600/?indian,seafood,fish,curry,${random}`;
-    } else if (cuisine.includes('goan')) {
-      return `https://source.unsplash.com/featured/800x600/?goan,fish,curry,${random}`;
-    } else if (cuisine.includes('kashmiri')) {
-      return `https://source.unsplash.com/featured/800x600/?kashmiri,food,rogan,josh,${random}`;
-    } else if (cuisine.includes('hyderabadi')) {
-      return `https://source.unsplash.com/featured/800x600/?hyderabadi,biryani,haleem,${random}`;
-    } else if (cuisine.includes('rajasthani')) {
-      return `https://source.unsplash.com/featured/800x600/?rajasthani,dal,baati,${random}`;
-    } else if (cuisine.includes('bengali')) {
-      return `https://source.unsplash.com/featured/800x600/?bengali,fish,curry,${random}`;
+      return `${baseUrl}/1087906${imageSize}`;
     } else if (cuisine.includes('biryani')) {
-      return `https://source.unsplash.com/featured/800x600/?biryani,rice,indian,${random}`;
+      return `${baseUrl}/1624487${imageSize}`;
+    } else if (cuisine.includes('street food')) {
+      return `${baseUrl}/3926135${imageSize}`;
     } else if (city === 'mumbai' || city === 'pune') {
-      return `https://source.unsplash.com/featured/800x600/?mumbai,maharashtrian,pav,bhaji,vada,${random}`;
+      return `${baseUrl}/2474661${imageSize}`;
     } else if (city === 'delhi' || city === 'new delhi') {
-      return `https://source.unsplash.com/featured/800x600/?delhi,street,food,chole,bhature,${random}`;
+      return `${baseUrl}/2313686${imageSize}`;
     } else if (city === 'bangalore') {
-      return `https://source.unsplash.com/featured/800x600/?bangalore,karnataka,food,dosa,${random}`;
+      return `${baseUrl}/3338681${imageSize}`;
     } else if (city === 'chandigarh') {
-      return `https://source.unsplash.com/featured/800x600/?chandigarh,punjabi,food,butter,chicken,${random}`;
+      return `${baseUrl}/2474658${imageSize}`;
     } else if (city === 'agra') {
-      return `https://source.unsplash.com/featured/800x600/?agra,north,indian,petha,${random}`;
+      return `${baseUrl}/3683307${imageSize}`;
     } else if (city === 'jaipur') {
-      return `https://source.unsplash.com/featured/800x600/?jaipur,rajasthani,food,dal,baati,${random}`;
+      return `${baseUrl}/2474661${imageSize}`;
     } else if (city === 'chennai') {
-      return `https://source.unsplash.com/featured/800x600/?chennai,tamil,food,idli,dosa,${random}`;
+      return `${baseUrl}/3026808${imageSize}`;
     } else if (city === 'lucknow') {
-      return `https://source.unsplash.com/featured/800x600/?lucknow,awadhi,kebab,biryani,${random}`;
+      return `${baseUrl}/1624487${imageSize}`;
     } else {
-      // More specific request to ensure we get food images
-      return `https://source.unsplash.com/featured/800x600/?indian,food,dish,${restaurant.name.split(' ')[0]},${random}`;
+      return `${baseUrl}/958545${imageSize}`;
     }
   };
 
   const getImageWithFallback = () => {
-    // Primary image source
     const primaryImageSrc = restaurant.photos?.[0] || getCuisineImage();
     const backupImageSrc = getCuisineImage();
     
@@ -104,7 +75,7 @@ const RestaurantCard: React.FC<RestaurantCardProps> = ({
       src: primaryImageSrc,
       onError: (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
         e.currentTarget.src = backupImageSrc;
-        e.currentTarget.onerror = null; // Prevent infinite loop if even the backup fails
+        e.currentTarget.onerror = null;
       }
     };
   };

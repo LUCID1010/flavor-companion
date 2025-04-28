@@ -1,4 +1,3 @@
-
 import { useQuery } from "@tanstack/react-query";
 import { 
   fetchLanguages, 
@@ -60,9 +59,8 @@ export const useRestaurantsByCity = (city?: string) => {
     queryKey: ['restaurants-by-city', city],
     queryFn: () => {
       const allRestaurants = getAllZomatoRestaurants();
-      // Filter out non-Indian restaurants
+      // Filter to only Indian restaurants
       const indianRestaurants = allRestaurants.filter(restaurant => 
-        restaurant.country === 'India' || 
         ['Chandigarh', 'Mumbai', 'New Delhi', 'Bangalore', 'Pune', 'Agra', 'Chennai', 'Lucknow', 'Jaipur'].includes(restaurant.city)
       );
       
@@ -82,9 +80,8 @@ export const useTopRatedRestaurants = (limit: number = 10) => {
     queryKey: ['top-rated-restaurants', limit],
     queryFn: () => {
       const allRestaurants = getAllZomatoRestaurants();
-      // Filter out non-Indian restaurants
+      // Filter to only Indian restaurants
       const indianRestaurants = allRestaurants.filter(restaurant => 
-        restaurant.country === 'India' || 
         ['Chandigarh', 'Mumbai', 'New Delhi', 'Bangalore', 'Pune', 'Agra', 'Chennai', 'Lucknow', 'Jaipur'].includes(restaurant.city)
       );
       
@@ -103,9 +100,8 @@ export const useRestaurantsGroupedByCity = () => {
     queryKey: ['restaurants-grouped-by-city'],
     queryFn: () => {
       const allRestaurants = getAllZomatoRestaurants();
-      // Filter out non-Indian restaurants
+      // Filter to only Indian restaurants
       const indianRestaurants = allRestaurants.filter(restaurant => 
-        restaurant.country === 'India' || 
         ['Chandigarh', 'Mumbai', 'New Delhi', 'Bangalore', 'Pune', 'Agra', 'Chennai', 'Lucknow', 'Jaipur'].includes(restaurant.city)
       );
       
