@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from "sonner";
+import { CuisineType, PriceRange, Restaurant } from '@/types';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import SearchBar from '@/components/ui/SearchBar';
 import FilterPanel from '@/components/ui/FilterPanel';
 import LeafletMap from '@/components/ui/LeafletMap';
-import { FilterOptions, Restaurant } from '@/types';
+import { FilterOptions } from '@/types';
 import { useAuth } from '@/hooks/useAuth';
 import { getCurrentUserLocation } from '@/services/api/mapApi';
 import { getAllZomatoRestaurants } from '@/utils/zomatoData';

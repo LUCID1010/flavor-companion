@@ -3,399 +3,218 @@ import { Restaurant, Review, User, CuisineType, PriceRange } from '@/types';
 export const mockRestaurants: Restaurant[] = [
   {
     id: "1",
-    name: "Rustic Table",
-    description: "Farm-to-table restaurant focusing on seasonal ingredients and rustic cooking techniques.",
-    cuisine: ["American", "Farm-to-table"],
+    name: "Punjab Palace",
+    description: "Authentic North Indian cuisine with a focus on tandoor specialties and rich curries.",
+    cuisine: ["North Indian", "Punjabi"],
     priceRange: "$$",
-    address: "123 Main Street",
-    city: "San Francisco",
-    state: "CA",
-    zipCode: "94105",
+    address: "123 MG Road",
+    city: "Chandigarh",
+    state: "Punjab",
+    zipCode: "160017",
     location: {
-      lat: 37.7749,
-      lng: -122.4194
+      lat: 30.7333,
+      lng: 76.7794
     },
-    phone: "(415) 555-1234",
-    website: "https://rustictable.com",
+    phone: "+91 172-555-1234",
+    website: "https://punjabpalace.com",
     hours: {
-      Monday: { open: "11:00", close: "22:00" },
-      Tuesday: { open: "11:00", close: "22:00" },
-      Wednesday: { open: "11:00", close: "22:00" },
-      Thursday: { open: "11:00", close: "22:00" },
-      Friday: { open: "11:00", close: "23:00" },
-      Saturday: { open: "10:00", close: "23:00" },
-      Sunday: { open: "10:00", close: "21:00" }
+      Monday: { open: "11:00", close: "23:00" },
+      Tuesday: { open: "11:00", close: "23:00" },
+      Wednesday: { open: "11:00", close: "23:00" },
+      Thursday: { open: "11:00", close: "23:00" },
+      Friday: { open: "11:00", close: "23:30" },
+      Saturday: { open: "11:00", close: "23:30" },
+      Sunday: { open: "11:00", close: "23:00" }
     },
     photos: [
-      "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80",
-      "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80",
-      "https://images.unsplash.com/photo-1544025162-d76694265947?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1769&q=80"
-    ],
-    rating: 4.5,
-    reviewCount: 127,
-    menuItems: [
-      {
-        id: "rt1",
-        name: "Heirloom Tomato Salad",
-        description: "Fresh heirloom tomatoes with house-made burrata, basil, and olive oil.",
-        price: 14,
-        category: "Starters",
-        popular: true
-      },
-      {
-        id: "rt2",
-        name: "Grass-Fed Burger",
-        description: "Local grass-fed beef with aged cheddar, caramelized onions, and special sauce on a brioche bun.",
-        price: 18,
-        category: "Mains",
-        popular: true
-      },
-      {
-        id: "rt3",
-        name: "Roasted Half Chicken",
-        description: "Herb-roasted free-range chicken with seasonal vegetables and natural jus.",
-        price: 26,
-        category: "Mains"
-      },
-      {
-        id: "rt4",
-        name: "Seasonal Fruit Cobbler",
-        description: "Warm cobbler with seasonal fruits and house-made vanilla ice cream.",
-        price: 12,
-        category: "Desserts"
-      }
-    ],
-    features: ["Outdoor Seating", "Full Bar", "Vegetarian Options", "Wheelchair Accessible"]
-  },
-  {
-    id: "2",
-    name: "Sakura Sushi",
-    description: "Authentic Japanese sushi restaurant with traditional techniques and the freshest fish.",
-    cuisine: ["Japanese", "Sushi"],
-    priceRange: "$$$",
-    address: "456 Market Street",
-    city: "San Francisco",
-    state: "CA",
-    zipCode: "94103",
-    location: {
-      lat: 37.7899,
-      lng: -122.4014
-    },
-    phone: "(415) 555-5678",
-    website: "https://sakurasf.com",
-    hours: {
-      Monday: { open: "17:00", close: "22:00" },
-      Tuesday: { open: "17:00", close: "22:00" },
-      Wednesday: { open: "17:00", close: "22:00" },
-      Thursday: { open: "17:00", close: "22:00" },
-      Friday: { open: "17:00", close: "23:00" },
-      Saturday: { open: "17:00", close: "23:00" },
-      Sunday: { open: "17:00", close: "21:00" }
-    },
-    photos: [
-      "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80",
-      "https://images.unsplash.com/photo-1553621042-f6e147245754?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1625&q=80",
-      "https://images.unsplash.com/photo-1583623025817-d180a2fe075e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80"
-    ],
-    rating: 4.8,
-    reviewCount: 214,
-    menuItems: [
-      {
-        id: "ss1",
-        name: "Chef's Selection Sashimi",
-        description: "Daily selection of the freshest fish, artfully presented.",
-        price: 38,
-        category: "Sashimi",
-        popular: true
-      },
-      {
-        id: "ss2",
-        name: "Dragon Roll",
-        description: "Eel and cucumber topped with avocado and eel sauce.",
-        price: 22,
-        category: "Specialty Rolls",
-        popular: true
-      },
-      {
-        id: "ss3",
-        name: "Sake Nigiri",
-        description: "Two pieces of salmon nigiri sushi.",
-        price: 8,
-        category: "Nigiri"
-      },
-      {
-        id: "ss4",
-        name: "Miso Soup",
-        description: "Traditional dashi broth with tofu, seaweed, and green onion.",
-        price: 6,
-        category: "Starters"
-      }
-    ],
-    features: ["Reservations Recommended", "Sake Selection", "Omakase", "Wheelchair Accessible"]
-  },
-  {
-    id: "3",
-    name: "La Trattoria",
-    description: "Family-owned Italian restaurant serving traditional recipes from Northern Italy.",
-    cuisine: ["Italian", "Mediterranean"],
-    priceRange: "$$",
-    address: "789 Columbus Avenue",
-    city: "San Francisco",
-    state: "CA",
-    zipCode: "94133",
-    location: {
-      lat: 37.8025,
-      lng: -122.4132
-    },
-    phone: "(415) 555-9012",
-    website: "https://latrattoriasf.com",
-    hours: {
-      Monday: { open: "16:00", close: "22:00" },
-      Tuesday: { open: "16:00", close: "22:00" },
-      Wednesday: { open: "16:00", close: "22:00" },
-      Thursday: { open: "16:00", close: "22:00" },
-      Friday: { open: "16:00", close: "23:00" },
-      Saturday: { open: "16:00", close: "23:00" },
-      Sunday: { open: "16:00", close: "21:00" }
-    },
-    photos: [
-      "https://images.unsplash.com/photo-1481931098730-318b6f776db0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80",
-      "https://images.unsplash.com/photo-1505932794267-da3d607ec7bd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80",
-      "https://images.unsplash.com/photo-1458644267420-66bc8a5f21e4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1772&q=80"
-    ],
-    rating: 4.3,
-    reviewCount: 176,
-    menuItems: [
-      {
-        id: "lt1",
-        name: "Bruschetta al Pomodoro",
-        description: "Toasted bread topped with fresh tomatoes, garlic, basil, and extra virgin olive oil.",
-        price: 12,
-        category: "Antipasti"
-      },
-      {
-        id: "lt2",
-        name: "Tagliatelle al Ragù",
-        description: "House-made tagliatelle pasta with traditional slow-cooked beef ragù.",
-        price: 24,
-        category: "Pasta",
-        popular: true
-      },
-      {
-        id: "lt3",
-        name: "Osso Buco",
-        description: "Braised veal shanks with gremolata, served with risotto Milanese.",
-        price: 36,
-        category: "Secondi",
-        popular: true
-      },
-      {
-        id: "lt4",
-        name: "Tiramisu",
-        description: "Classic Italian dessert with layers of coffee-soaked ladyfingers and mascarpone cream.",
-        price: 10,
-        category: "Dolci"
-      }
-    ],
-    features: ["Family-Friendly", "Wine Selection", "Vegetarian Options", "Gluten-Free Options"]
-  },
-  {
-    id: "4",
-    name: "Spice Kingdom",
-    description: "Authentic Indian cuisine with a focus on regional specialties and house-made spice blends.",
-    cuisine: ["Indian", "Vegetarian"],
-    priceRange: "$$",
-    address: "321 Valencia Street",
-    city: "San Francisco",
-    state: "CA",
-    zipCode: "94103",
-    location: {
-      lat: 37.7691,
-      lng: -122.4215
-    },
-    phone: "(415) 555-3456",
-    website: "https://spicekingdom.com",
-    hours: {
-      Monday: { open: "11:30", close: "22:00" },
-      Tuesday: { open: "11:30", close: "22:00" },
-      Wednesday: { open: "11:30", close: "22:00" },
-      Thursday: { open: "11:30", close: "22:00" },
-      Friday: { open: "11:30", close: "23:00" },
-      Saturday: { open: "11:30", close: "23:00" },
-      Sunday: { open: "11:30", close: "21:00" }
-    },
-    photos: [
-      "https://images.unsplash.com/photo-1585937421612-70a008356c36?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1936&q=80",
-      "https://images.unsplash.com/photo-1565557623262-b51c2513a641?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1771&q=80",
-      "https://images.unsplash.com/photo-1631292784640-2b24be784d1d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80"
+      "https://images.pexels.com/photos/2474658/pexels-photo-2474658.jpeg",
+      "https://images.pexels.com/photos/2474661/pexels-photo-2474661.jpeg",
+      "https://images.pexels.com/photos/958545/pexels-photo-958545.jpeg"
     ],
     rating: 4.6,
-    reviewCount: 153,
+    reviewCount: 342,
     menuItems: [
       {
-        id: "sk1",
-        name: "Samosa",
-        description: "Crispy pastry filled with spiced potatoes and peas, served with tamarind and mint chutneys.",
-        price: 8,
-        category: "Appetizers",
-        popular: true
-      },
-      {
-        id: "sk2",
+        id: "pp1",
         name: "Butter Chicken",
-        description: "Tender chicken in a rich, creamy tomato sauce with aromatic spices.",
-        price: 22,
-        category: "Mains",
+        description: "Tender chicken in rich tomato-butter gravy.",
+        price: 450,
+        category: "Main Course",
         popular: true
       },
       {
-        id: "sk3",
-        name: "Vegetable Biryani",
-        description: "Aromatic basmati rice cooked with mixed vegetables and special spice blend.",
-        price: 18,
-        category: "Rice Dishes"
+        id: "pp2",
+        name: "Dal Makhani",
+        description: "Black lentils slow-cooked with cream and spices.",
+        price: 350,
+        category: "Main Course",
+        popular: true
       },
       {
-        id: "sk4",
+        id: "pp3",
         name: "Garlic Naan",
-        description: "Traditional Indian bread topped with garlic and butter, baked in tandoor oven.",
-        price: 4,
+        description: "Fresh bread with garlic and butter.",
+        price: 80,
         category: "Breads"
       }
     ],
-    features: ["Vegetarian Options", "Vegan Options", "Gluten-Free Options", "Spice Level Customization"]
+    features: ["North Indian", "Family Dining", "Outdoor Seating", "Live Music"]
   },
   {
-    id: "5",
-    name: "Coastal Grill",
-    description: "Seafood restaurant specializing in sustainably caught fish and shellfish with ocean views.",
-    cuisine: ["Seafood", "American"],
-    priceRange: "$$$",
-    address: "543 Beach Street",
-    city: "San Francisco",
-    state: "CA",
-    zipCode: "94133",
-    location: {
-      lat: 37.8079,
-      lng: -122.4177
-    },
-    phone: "(415) 555-7890",
-    website: "https://coastalgrillsf.com",
-    hours: {
-      Monday: { open: "16:00", close: "22:00" },
-      Tuesday: { open: "16:00", close: "22:00" },
-      Wednesday: { open: "16:00", close: "22:00" },
-      Thursday: { open: "16:00", close: "22:00" },
-      Friday: { open: "16:00", close: "23:00" },
-      Saturday: { open: "12:00", close: "23:00" },
-      Sunday: { open: "12:00", close: "21:00" }
-    },
-    photos: [
-      "https://images.unsplash.com/photo-1615361200141-f45961202b05?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80",
-      "https://images.unsplash.com/photo-1559715541-5daf8a0296d0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80",
-      "https://images.unsplash.com/photo-1565280654386-466329347339?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80"
-    ],
-    rating: 4.7,
-    reviewCount: 189,
-    menuItems: [
-      {
-        id: "cg1",
-        name: "Fresh Oysters",
-        description: "Half dozen seasonal oysters with mignonette and cocktail sauce.",
-        price: 24,
-        category: "Raw Bar",
-        popular: true
-      },
-      {
-        id: "cg2",
-        name: "Clam Chowder",
-        description: "Creamy New England style chowder with clams, potatoes, and bacon.",
-        price: 14,
-        category: "Starters"
-      },
-      {
-        id: "cg3",
-        name: "Grilled Whole Sea Bass",
-        description: "Whole sea bass grilled with herbs, lemon, and olive oil, served with seasonal vegetables.",
-        price: 42,
-        category: "Mains",
-        popular: true
-      },
-      {
-        id: "cg4",
-        name: "Cioppino",
-        description: "San Francisco's famous seafood stew with fish, shrimp, clams, mussels, and crab in tomato broth.",
-        price: 38,
-        category: "Mains"
-      }
-    ],
-    features: ["Ocean View", "Full Bar", "Sustainable Seafood", "Happy Hour"]
-  },
-  {
-    id: "6",
-    name: "Verde Taqueria",
-    description: "Modern Mexican taqueria using organic ingredients and traditional cooking methods.",
-    cuisine: ["Mexican", "Latin American"],
+    id: "2",
+    name: "Dosa Paradise",
+    description: "South Indian vegetarian restaurant famous for its crispy dosas and authentic filter coffee.",
+    cuisine: ["South Indian", "Kerala"],
     priceRange: "$",
-    address: "876 Mission Street",
-    city: "San Francisco",
-    state: "CA",
-    zipCode: "94103",
+    address: "45 Brigade Road",
+    city: "Bangalore",
+    state: "Karnataka",
+    zipCode: "560001",
     location: {
-      lat: 37.7835,
-      lng: -122.4019
+      lat: 12.9716,
+      lng: 77.5946
     },
-    phone: "(415) 555-2345",
-    website: "https://verdetaqueria.com",
+    phone: "+91 80-555-5678",
+    website: "https://dosaparadise.com",
     hours: {
-      Monday: { open: "11:00", close: "22:00" },
-      Tuesday: { open: "11:00", close: "22:00" },
-      Wednesday: { open: "11:00", close: "22:00" },
-      Thursday: { open: "11:00", close: "22:00" },
-      Friday: { open: "11:00", close: "24:00" },
-      Saturday: { open: "11:00", close: "24:00" },
-      Sunday: { open: "11:00", close: "21:00" }
+      Monday: { open: "07:00", close: "22:30" },
+      Tuesday: { open: "07:00", close: "22:30" },
+      Wednesday: { open: "07:00", close: "22:30" },
+      Thursday: { open: "07:00", close: "22:30" },
+      Friday: { open: "07:00", close: "23:00" },
+      Saturday: { open: "07:00", close: "23:00" },
+      Sunday: { open: "07:00", close: "22:30" }
     },
     photos: [
-      "https://images.unsplash.com/photo-1615870216519-2f9fa575fa5c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80",
-      "https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80",
-      "https://images.unsplash.com/photo-1556761223-4c4282c73f77?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1774&q=80"
+      "https://images.pexels.com/photos/3026808/pexels-photo-3026808.jpeg",
+      "https://images.pexels.com/photos/3026805/pexels-photo-3026805.jpeg",
+      "https://images.pexels.com/photos/958545/pexels-photo-958545.jpeg"
     ],
     rating: 4.4,
-    reviewCount: 221,
+    reviewCount: 567,
     menuItems: [
       {
-        id: "vt1",
-        name: "Guacamole & Chips",
-        description: "House-made guacamole with lime, cilantro, and fresh tortilla chips.",
-        price: 10,
-        category: "Starters",
+        id: "dp1",
+        name: "Masala Dosa",
+        description: "Crispy crepe with spiced potato filling.",
+        price: 120,
+        category: "Dosas",
         popular: true
       },
       {
-        id: "vt2",
-        name: "Carnitas Taco",
-        description: "Slow-cooked pork, pickled onions, cilantro, and salsa verde on corn tortilla.",
-        price: 5,
-        category: "Tacos",
+        id: "dp2",
+        name: "Filter Coffee",
+        description: "Traditional South Indian coffee.",
+        price: 40,
+        category: "Beverages",
         popular: true
-      },
-      {
-        id: "vt3",
-        name: "Vegetable Burrito",
-        description: "Grilled seasonal vegetables, black beans, rice, guacamole, and cheese in a flour tortilla.",
-        price: 12,
-        category: "Burritos"
-      },
-      {
-        id: "vt4",
-        name: "Churros",
-        description: "Traditional Mexican fried pastry dusted with cinnamon sugar, served with chocolate dipping sauce.",
-        price: 8,
-        category: "Desserts"
       }
     ],
-    features: ["Quick Service", "Vegetarian Options", "Vegan Options", "House-Made Tortillas"]
+    features: ["South Indian", "Vegetarian", "Breakfast", "Quick Service"]
+  },
+  {
+    id: "3",
+    name: "Royal Biryani House",
+    description: "Famous for authentic Hyderabadi biryani and Mughlai cuisine.",
+    cuisine: ["Hyderabadi", "Mughlai"],
+    priceRange: "$$",
+    address: "78 Charminar Road",
+    city: "Hyderabad",
+    state: "Telangana",
+    zipCode: "500002",
+    location: {
+      lat: 17.3850,
+      lng: 78.4867
+    },
+    phone: "+91 40-555-9012",
+    website: "https://royalbiryani.com",
+    hours: {
+      Monday: { open: "11:30", close: "23:00" },
+      Tuesday: { open: "11:30", close: "23:00" },
+      Wednesday: { open: "11:30", close: "23:00" },
+      Thursday: { open: "11:30", close: "23:00" },
+      Friday: { open: "11:30", close: "23:30" },
+      Saturday: { open: "11:30", close: "23:30" },
+      Sunday: { open: "11:30", close: "23:00" }
+    },
+    photos: [
+      "https://images.pexels.com/photos/1624487/pexels-photo-1624487.jpeg",
+      "https://images.pexels.com/photos/1624484/pexels-photo-1624484.jpeg",
+      "https://images.pexels.com/photos/958545/pexels-photo-958545.jpeg"
+    ],
+    rating: 4.7,
+    reviewCount: 892,
+    menuItems: [
+      {
+        id: "rb1",
+        name: "Hyderabadi Biryani",
+        description: "Fragrant rice with tender meat and authentic spices.",
+        price: 380,
+        category: "Biryani",
+        popular: true
+      },
+      {
+        id: "rb2",
+        name: "Haleem",
+        description: "Traditional meat and wheat dish.",
+        price: 320,
+        category: "Specials",
+        popular: true
+      }
+    ],
+    features: ["Biryani Specialist", "Family Dining", "Takeaway", "Late Night"]
+  },
+  {
+    id: "4",
+    name: "Mumbai Street Eats",
+    description: "Authentic Mumbai street food experience in a modern setting.",
+    cuisine: ["Street Food", "Maharashtrian"],
+    priceRange: "$",
+    address: "234 Juhu Beach Road",
+    city: "Mumbai",
+    state: "Maharashtra",
+    zipCode: "400049",
+    location: {
+      lat: 19.0760,
+      lng: 72.8777
+    },
+    phone: "+91 22-555-3456",
+    website: "https://mumbaistreeteats.com",
+    hours: {
+      Monday: { open: "11:00", close: "23:00" },
+      Tuesday: { open: "11:00", close: "23:00" },
+      Wednesday: { open: "11:00", close: "23:00" },
+      Thursday: { open: "11:00", close: "23:00" },
+      Friday: { open: "11:00", close: "23:30" },
+      Saturday: { open: "11:00", close: "23:30" },
+      Sunday: { open: "11:00", close: "23:00" }
+    },
+    photos: [
+      "https://images.pexels.com/photos/3926135/pexels-photo-3926135.jpeg",
+      "https://images.pexels.com/photos/2474661/pexels-photo-2474661.jpeg",
+      "https://images.pexels.com/photos/958545/pexels-photo-958545.jpeg"
+    ],
+    rating: 4.5,
+    reviewCount: 678,
+    menuItems: [
+      {
+        id: "ms1",
+        name: "Vada Pav",
+        description: "Mumbai's favorite street food sandwich.",
+        price: 40,
+        category: "Street Food",
+        popular: true
+      },
+      {
+        id: "ms2",
+        name: "Pav Bhaji",
+        description: "Spiced vegetable curry with buttered bread.",
+        price: 120,
+        category: "Street Food",
+        popular: true
+      }
+    ],
+    features: ["Street Food", "Quick Service", "Takeaway", "Late Night"]
   }
 ];
 
