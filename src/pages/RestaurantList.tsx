@@ -43,7 +43,8 @@ const RestaurantList: React.FC = () => {
     'Agra', 
     'Chennai', 
     'Lucknow', 
-    'Jaipur'
+    'Jaipur',
+    'Hyderabad'
   ];
 
   const [filters, setFilters] = useState<FilterOptions>({
@@ -57,15 +58,22 @@ const RestaurantList: React.FC = () => {
   
   useEffect(() => {
     try {
-      const zomatoRestaurants = getAllZomatoRestaurants();
-      setRestaurants(zomatoRestaurants);
-      setFilteredRestaurants(zomatoRestaurants);
+      const allZomatoRestaurants = getAllZomatoRestaurants();
+      
+      const indianCityRestaurants = allZomatoRestaurants.filter(restaurant => 
+        availableCities.includes(restaurant.city) && 
+        restaurant.city !== 'San Francisco' &&
+        restaurant.state !== 'CA'
+      );
+      
+      setRestaurants(indianCityRestaurants);
+      setFilteredRestaurants(indianCityRestaurants);
       
       const restaurantsByCity: Record<string, Restaurant[]> = {};
       
       availableCities.forEach(city => {
         if (city !== 'All') {
-          restaurantsByCity[city] = zomatoRestaurants.filter(r => r.city === city);
+          restaurantsByCity[city] = indianCityRestaurants.filter(r => r.city === city);
         }
       });
       
@@ -79,7 +87,7 @@ const RestaurantList: React.FC = () => {
           const chandigarhLocation = { lat: 30.7333, lng: 76.7794 };
           
           const recommended = getRestaurantRecommendations(
-            zomatoRestaurants,
+            indianCityRestaurants,
             chandigarhLocation.lat,
             chandigarhLocation.lng,
             undefined,
@@ -97,7 +105,7 @@ const RestaurantList: React.FC = () => {
           setUserLocation(chandigarhLocation);
           
           const recommended = getRestaurantRecommendations(
-            zomatoRestaurants,
+            indianCityRestaurants,
             chandigarhLocation.lat,
             chandigarhLocation.lng
           );
@@ -109,6 +117,27 @@ const RestaurantList: React.FC = () => {
       };
       
       fetchLocation();
+      
+      const searchQuery = searchParams.get('q');
+      if (searchQuery) {
+        setFilteredRestaurants(prev => 
+          prev.filter(restaurant => 
+            restaurant.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            restaurant.cuisine.some(c => c.toLowerCase().includes(searchQuery.toLowerCase())) ||
+            restaurant.description.toLowerCase().includes(searchQuery.toLowerCase())
+          )
+        );
+      }
+      
+      const locationParam = searchParams.get('loc');
+      if (locationParam) {
+        setFilteredRestaurants(prev => 
+          prev.filter(restaurant => 
+            restaurant.city.toLowerCase().includes(locationParam.toLowerCase()) ||
+            restaurant.state.toLowerCase().includes(locationParam.toLowerCase())
+          )
+        );
+      }
       
       const cuisineParam = searchParams.get('cuisine');
       if (cuisineParam) {

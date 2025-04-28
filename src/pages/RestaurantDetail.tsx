@@ -5,22 +5,47 @@ import { Heart, MapPin, Clock, Phone, Globe, Star, ChevronRight, ChevronLeft, Sh
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import RatingStars from '@/components/ui/RatingStars';
-import { getRestaurantById, getRestaurantReviews, mockUsers } from '@/utils/mockData';
+import { getRestaurantById, getRestaurantReviews } from '@/utils/mockData';
+import { getAllZomatoRestaurants } from '@/utils/zomatoData';
+import { toast } from 'sonner';
+import { Restaurant } from '@/types';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/hooks/useAuth';
 
 const RestaurantDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const restaurant = getRestaurantById(id || '');
-  const reviews = getRestaurantReviews(id || '');
+  const [restaurant, setRestaurant] = useState<Restaurant | undefined>(undefined);
+  const [reviews, setReviews] = useState<any[]>([]);
+  const { isFavorite, toggleFavorite } = useAuth();
   
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [showAllPhotos, setShowAllPhotos] = useState(false);
-  const [isFavorite, setIsFavorite] = useState(false);
   
   useEffect(() => {
-    // Check if restaurant is in favorites
-    const userFavorites = mockUsers[0]?.favorites || [];
-    setIsFavorite(userFavorites.includes(id || ''));
+    // First try to get from getRestaurantById
+    let foundRestaurant = getRestaurantById(id || '');
+    
+    // If not found, try from getAllZomatoRestaurants
+    if (!foundRestaurant) {
+      const allRestaurants = getAllZomatoRestaurants();
+      foundRestaurant = allRestaurants.find(r => r.id === id);
+    }
+    
+    // Set restaurant if found
+    if (foundRestaurant) {
+      setRestaurant(foundRestaurant);
+      
+      // Get reviews for this restaurant
+      try {
+        const restaurantReviews = getRestaurantReviews(id || '');
+        setReviews(restaurantReviews);
+      } catch (error) {
+        console.error("Error loading reviews:", error);
+        setReviews([]);
+      }
+    } else {
+      toast.error("Restaurant not found");
+    }
     
     // Scroll to top on mount
     window.scrollTo(0, 0);
@@ -50,24 +75,29 @@ const RestaurantDetail: React.FC = () => {
     );
   }
   
-  const toggleFavorite = () => setIsFavorite(!isFavorite);
-  
   const nextImage = () => {
-    setActiveImageIndex((prev) => 
-      prev === restaurant.photos.length - 1 ? 0 : prev + 1
-    );
+    if (restaurant.photos && restaurant.photos.length) {
+      setActiveImageIndex((prev) => 
+        prev === restaurant.photos.length - 1 ? 0 : prev + 1
+      );
+    }
   };
   
   const prevImage = () => {
-    setActiveImageIndex((prev) => 
-      prev === 0 ? restaurant.photos.length - 1 : prev - 1
-    );
+    if (restaurant.photos && restaurant.photos.length) {
+      setActiveImageIndex((prev) => 
+        prev === 0 ? restaurant.photos.length - 1 : prev - 1
+      );
+    }
   };
   
   const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
   const currentDay = daysOfWeek[new Date().getDay() === 0 ? 6 : new Date().getDay() - 1];
   
-  const hoursToday = restaurant.hours[currentDay];
+  // Make sure hours exist
+  const hoursToday = restaurant.hours && restaurant.hours[currentDay] 
+    ? restaurant.hours[currentDay] 
+    : { open: '9:00', close: '22:00' };
   
   return (
     <div className="flex min-h-screen flex-col">
@@ -78,56 +108,70 @@ const RestaurantDetail: React.FC = () => {
         <div className="relative mb-8">
           {/* Main Image */}
           <div className="relative h-[30vh] w-full overflow-hidden bg-gray-100 sm:h-[40vh] md:h-[50vh]">
-            <img
-              src={restaurant.photos[activeImageIndex]}
-              alt={restaurant.name}
-              className="h-full w-full object-cover"
-            />
+            {restaurant.photos && restaurant.photos.length > 0 ? (
+              <img
+                src={restaurant.photos[activeImageIndex]}
+                alt={restaurant.name}
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center bg-gray-200">
+                <p className="text-gray-500">No image available</p>
+              </div>
+            )}
             
             {/* Overlay gradient */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
             
             {/* Navigation Arrows */}
-            <button
-              onClick={prevImage}
-              className="absolute left-4 top-1/2 -translate-y-1/2 rounded-full bg-white/80 p-2 shadow-elegant backdrop-blur-sm transition-all hover:bg-white"
-              aria-label="Previous image"
-            >
-              <ChevronLeft size={24} className="text-gray-800" />
-            </button>
-            
-            <button
-              onClick={nextImage}
-              className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full bg-white/80 p-2 shadow-elegant backdrop-blur-sm transition-all hover:bg-white"
-              aria-label="Next image"
-            >
-              <ChevronRight size={24} className="text-gray-800" />
-            </button>
+            {restaurant.photos && restaurant.photos.length > 1 && (
+              <>
+                <button
+                  onClick={prevImage}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 rounded-full bg-white/80 p-2 shadow-elegant backdrop-blur-sm transition-all hover:bg-white"
+                  aria-label="Previous image"
+                >
+                  <ChevronLeft size={24} className="text-gray-800" />
+                </button>
+                
+                <button
+                  onClick={nextImage}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full bg-white/80 p-2 shadow-elegant backdrop-blur-sm transition-all hover:bg-white"
+                  aria-label="Next image"
+                >
+                  <ChevronRight size={24} className="text-gray-800" />
+                </button>
+              </>
+            )}
             
             {/* Thumbnail Indicators */}
-            <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-2">
-              {restaurant.photos.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setActiveImageIndex(index)}
-                  className={cn(
-                    "h-2 w-2 rounded-full transition-all",
-                    index === activeImageIndex
-                      ? "bg-white"
-                      : "bg-white/50 hover:bg-white/80"
-                  )}
-                  aria-label={`View image ${index + 1}`}
-                />
-              ))}
-            </div>
+            {restaurant.photos && restaurant.photos.length > 1 && (
+              <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-2">
+                {restaurant.photos.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setActiveImageIndex(index)}
+                    className={cn(
+                      "h-2 w-2 rounded-full transition-all",
+                      index === activeImageIndex
+                        ? "bg-white"
+                        : "bg-white/50 hover:bg-white/80"
+                    )}
+                    aria-label={`View image ${index + 1}`}
+                  />
+                ))}
+              </div>
+            )}
             
             {/* View All Photos Button */}
-            <button
-              onClick={() => setShowAllPhotos(true)}
-              className="absolute bottom-4 right-4 flex items-center gap-1.5 rounded-lg bg-white/90 px-3 py-1.5 text-sm font-medium text-gray-800 shadow-elegant backdrop-blur-sm transition-all hover:bg-white"
-            >
-              View All Photos
-            </button>
+            {restaurant.photos && restaurant.photos.length > 0 && (
+              <button
+                onClick={() => setShowAllPhotos(true)}
+                className="absolute bottom-4 right-4 flex items-center gap-1.5 rounded-lg bg-white/90 px-3 py-1.5 text-sm font-medium text-gray-800 shadow-elegant backdrop-blur-sm transition-all hover:bg-white"
+              >
+                View All Photos
+              </button>
+            )}
           </div>
         </div>
         
@@ -156,7 +200,7 @@ const RestaurantDetail: React.FC = () => {
               </div>
               
               <div className="flex flex-wrap gap-2">
-                {restaurant.features.map((feature) => (
+                {restaurant.features && restaurant.features.map((feature) => (
                   <span
                     key={feature}
                     className="rounded-full bg-gray-100 px-3 py-1 text-sm font-medium text-gray-700"
@@ -169,10 +213,10 @@ const RestaurantDetail: React.FC = () => {
             
             <div className="flex gap-3">
               <button
-                onClick={toggleFavorite}
+                onClick={() => toggleFavorite(restaurant.id)}
                 className={cn(
                   "flex items-center gap-1.5 rounded-lg border px-4 py-2 text-sm font-medium transition-all",
-                  isFavorite
+                  isFavorite(restaurant.id)
                     ? "border-foodie-200 bg-foodie-50 text-foodie-700"
                     : "border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50"
                 )}
@@ -180,10 +224,10 @@ const RestaurantDetail: React.FC = () => {
                 <Heart
                   size={18}
                   className={cn(
-                    isFavorite ? "fill-foodie-500 text-foodie-500" : ""
+                    isFavorite(restaurant.id) ? "fill-foodie-500 text-foodie-500" : ""
                   )}
                 />
-                <span>{isFavorite ? 'Saved' : 'Save'}</span>
+                <span>{isFavorite(restaurant.id) ? 'Saved' : 'Save'}</span>
               </button>
               
               <button
@@ -209,7 +253,7 @@ const RestaurantDetail: React.FC = () => {
               <section className="mb-10">
                 <h2 className="mb-4 text-xl font-semibold text-gray-900">Popular Menu Items</h2>
                 <div className="grid gap-4 sm:grid-cols-2">
-                  {restaurant.menuItems
+                  {restaurant.menuItems && restaurant.menuItems
                     .filter(item => item.popular)
                     .map((item) => (
                     <div
@@ -241,7 +285,7 @@ const RestaurantDetail: React.FC = () => {
               <section className="mb-10">
                 <div className="mb-4 flex items-center justify-between">
                   <h2 className="text-xl font-semibold text-gray-900">
-                    Reviews ({restaurant.reviewCount})
+                    Reviews ({restaurant.reviewCount || 0})
                   </h2>
                   <button
                     className="text-sm font-medium text-foodie-600 transition-colors hover:text-foodie-700"
@@ -251,7 +295,7 @@ const RestaurantDetail: React.FC = () => {
                 </div>
                 
                 <div className="space-y-6">
-                  {reviews.slice(0, 3).map((review) => (
+                  {reviews && reviews.slice(0, 3).map((review) => (
                     <div key={review.id} className="animate-fade-in">
                       <div className="mb-3 flex items-center justify-between">
                         <div className="flex items-center gap-3">
@@ -366,7 +410,7 @@ const RestaurantDetail: React.FC = () => {
                           rel="noopener noreferrer"
                           className="text-sm text-foodie-600 transition-colors hover:text-foodie-700"
                         >
-                          {restaurant.website.replace(/^https?:\/\//, '')}
+                          {restaurant.website && restaurant.website.replace(/^https?:\/\//, '')}
                         </a>
                       </div>
                     </div>
@@ -395,7 +439,7 @@ const RestaurantDetail: React.FC = () => {
       </main>
       
       {/* Photo Gallery Modal */}
-      {showAllPhotos && (
+      {showAllPhotos && restaurant.photos && restaurant.photos.length > 0 && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black">
           <button
             onClick={() => setShowAllPhotos(false)}

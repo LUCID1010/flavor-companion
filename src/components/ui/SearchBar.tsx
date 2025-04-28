@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Search, MapPin, ChevronRight } from 'lucide-react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 
 interface SearchBarProps {
@@ -41,6 +41,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
       if (query) params.append('q', query);
       if (location) params.append('loc', location);
       
+      // Make sure we explicitly navigate to the restaurants page with the search parameters
       navigate(`/restaurants?${params.toString()}`);
     }
   };
@@ -69,7 +70,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Find restaurants, cuisine, dishes..."
+          placeholder="Find Indian restaurants, cuisine, dishes..."
           className={cn(
             "flex-1 bg-transparent py-2 pl-2 pr-4 text-gray-900 placeholder-gray-400 outline-none",
             isLarge ? "md:py-3 md:text-lg" : ""
@@ -90,7 +91,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
           type="text"
           value={location}
           onChange={(e) => setLocation(e.target.value)}
-          placeholder="City, state, or zip code"
+          placeholder="Indian city or state"
           className={cn(
             "flex-1 bg-transparent py-2 pl-2 pr-4 text-gray-900 placeholder-gray-400 outline-none",
             isLarge ? "md:py-3 md:text-lg" : ""
