@@ -20,11 +20,12 @@ const CitySelector: React.FC<CitySelectorProps> = ({
           <button
             key={city}
             onClick={() => onCityChange(city)}
-            className={`whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+            className={cn(
+              "whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium transition-colors",
               selectedCity === city
-                ? 'bg-foodie-500 text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-            }`}
+                ? "bg-foodie-500 text-white"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+            )}
           >
             {city}
           </button>
