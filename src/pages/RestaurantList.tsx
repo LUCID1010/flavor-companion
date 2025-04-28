@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from "sonner";
@@ -6,14 +5,18 @@ import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import SearchBar from '@/components/ui/SearchBar';
 import FilterPanel from '@/components/ui/FilterPanel';
-import RestaurantCard from '@/components/ui/RestaurantCard';
-import { CuisineType, FilterOptions, PriceRange, Restaurant } from '@/types';
-import { useAuth } from '@/hooks/useAuth';
-import { MapPin, List } from 'lucide-react';
-import { getCurrentUserLocation } from '@/services/api/mapApi';
 import LeafletMap from '@/components/ui/LeafletMap';
+import { FilterOptions, Restaurant } from '@/types';
+import { useAuth } from '@/hooks/useAuth';
+import { getCurrentUserLocation } from '@/services/api/mapApi';
 import { getAllZomatoRestaurants } from '@/utils/zomatoData';
 import { getRestaurantRecommendations } from '@/utils/recommendationEngine';
+import CitySelector from '@/components/restaurant/CitySelector';
+import ViewModeToggle from '@/components/restaurant/ViewModeToggle';
+import SortingControl from '@/components/restaurant/SortingControl';
+import RestaurantGrid from '@/components/restaurant/RestaurantGrid';
+import CitySection from '@/components/restaurant/CitySection';
+import NoRestaurantsFound from '@/components/restaurant/NoRestaurantsFound';
 
 const RestaurantList: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -52,13 +55,11 @@ const RestaurantList: React.FC = () => {
   const [sortBy, setSortBy] = useState('relevance');
   
   useEffect(() => {
-    // Load Zomato restaurant data
     try {
       const zomatoRestaurants = getAllZomatoRestaurants();
       setRestaurants(zomatoRestaurants);
       setFilteredRestaurants(zomatoRestaurants);
       
-      // Group restaurants by city
       const restaurantsByCity: Record<string, Restaurant[]> = {};
       
       availableCities.forEach(city => {
@@ -69,36 +70,31 @@ const RestaurantList: React.FC = () => {
       
       setCityRestaurants(restaurantsByCity);
       
-      // Get user location
       const fetchLocation = async () => {
         try {
           const location = await getCurrentUserLocation();
           setUserLocation(location);
           
-          // Default to Chandigarh location if no restaurants found near user
           const chandigarhLocation = { lat: 30.7333, lng: 76.7794 };
           
-          // Generate recommendations based on Chandigarh location
           const recommended = getRestaurantRecommendations(
             zomatoRestaurants,
             chandigarhLocation.lat,
             chandigarhLocation.lng,
-            undefined, // No cuisine filter initially
-            3.5, // Min rating
-            5, // Max distance km
-            10, // Top N results
-            2 // Max per locality
+            undefined,
+            3.5,
+            5,
+            10,
+            2
           );
           
           setRecommendedRestaurants(recommended);
-          setUserLocation(chandigarhLocation); // Set to Chandigarh for map display
+          setUserLocation(chandigarhLocation);
         } catch (error) {
           console.error('Error getting user location:', error);
-          // Default to Chandigarh, India
           const chandigarhLocation = { lat: 30.7333, lng: 76.7794 };
           setUserLocation(chandigarhLocation);
           
-          // Generate recommendations based on Chandigarh location
           const recommended = getRestaurantRecommendations(
             zomatoRestaurants,
             chandigarhLocation.lat,
@@ -113,7 +109,6 @@ const RestaurantList: React.FC = () => {
       
       fetchLocation();
       
-      // Apply filters from URL params
       const cuisineParam = searchParams.get('cuisine');
       if (cuisineParam) {
         setFilters(prev => ({
@@ -135,7 +130,6 @@ const RestaurantList: React.FC = () => {
         setSortBy(sortParam);
       }
       
-      // Check for city param
       const cityParam = searchParams.get('city');
       if (cityParam && availableCities.includes(cityParam)) {
         setSelectedCity(cityParam);
@@ -153,7 +147,6 @@ const RestaurantList: React.FC = () => {
   useEffect(() => {
     if (!restaurants.length) return;
     
-    // First filter by selected city
     let result = [...restaurants];
     
     if (selectedCity !== 'All') {
@@ -186,7 +179,6 @@ const RestaurantList: React.FC = () => {
       );
     }
     
-    // Add distance if user location is available
     if (userLocation) {
       result = result.map(restaurant => ({
         ...restaurant,
@@ -258,7 +250,6 @@ const RestaurantList: React.FC = () => {
   
   const handleCityChange = (city: string) => {
     setSelectedCity(city);
-    // Update URL params
     const newSearchParams = new URLSearchParams(searchParams);
     if (city === 'All') {
       newSearchParams.delete('city');
@@ -268,8 +259,12 @@ const RestaurantList: React.FC = () => {
     navigate(`?${newSearchParams.toString()}`);
   };
 
+  const handleViewModeChange = (mode: 'list' | 'map') => {
+    setViewMode(mode);
+  };
+
   const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
-    const R = 6371; // Earth's radius in km
+    const R = 6371;
     const dLat = deg2rad(lat2 - lat1);
     const dLon = deg2rad(lon2 - lon1);
     
@@ -303,102 +298,39 @@ const RestaurantList: React.FC = () => {
               <SearchBar showButton />
             </div>
             
-            {/* City selector */}
-            <div className="mb-6 overflow-x-auto pb-2">
-              <div className="flex space-x-2">
-                {availableCities.map((city) => (
-                  <button
-                    key={city}
-                    onClick={() => handleCityChange(city)}
-                    className={`whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium transition-colors ${
-                      selectedCity === city
-                        ? 'bg-foodie-500 text-white'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    }`}
-                  >
-                    {city}
-                  </button>
-                ))}
-              </div>
-            </div>
+            <CitySelector 
+              selectedCity={selectedCity}
+              availableCities={availableCities}
+              onCityChange={handleCityChange}
+            />
             
-            {/* Featured restaurants for each city */}
             {selectedCity === 'All' && !isLoading && (
               <div className="space-y-10">
                 {availableCities.filter(city => city !== 'All').map((city) => (
                   cityRestaurants[city] && cityRestaurants[city].length > 0 && (
-                    <div key={city} className="mb-10">
-                      <div className="mb-4 flex items-center justify-between">
-                        <h2 className="text-xl font-medium text-gray-900">
-                          Top Restaurants in {city}
-                        </h2>
-                        <button
-                          onClick={() => handleCityChange(city)}
-                          className="rounded-full bg-gray-100 px-4 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-200"
-                        >
-                          See all in {city}
-                        </button>
-                      </div>
-                      <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                        {cityRestaurants[city]
-                          .sort((a, b) => b.rating - a.rating)
-                          .slice(0, 4)
-                          .map((restaurant) => (
-                            <RestaurantCard
-                              key={restaurant.id}
-                              restaurant={restaurant}
-                              isFavorite={isFavorite(restaurant.id)}
-                              onFavoriteToggle={toggleFavorite}
-                            />
-                          ))}
-                      </div>
-                    </div>
+                    <CitySection
+                      key={city}
+                      city={city}
+                      restaurants={cityRestaurants[city]}
+                      isFavorite={isFavorite}
+                      onFavoriteToggle={toggleFavorite}
+                      onViewAllClick={handleCityChange}
+                    />
                   )
                 ))}
               </div>
             )}
             
             <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setViewMode('list')}
-                  className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium ${
-                    viewMode === 'list' 
-                      ? 'bg-foodie-50 text-foodie-600' 
-                      : 'bg-white text-gray-600 hover:bg-gray-100'
-                  }`}
-                >
-                  <List size={18} />
-                  <span>List</span>
-                </button>
-                <button
-                  onClick={() => setViewMode('map')}
-                  className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium ${
-                    viewMode === 'map' 
-                      ? 'bg-foodie-50 text-foodie-600' 
-                      : 'bg-white text-gray-600 hover:bg-gray-100'
-                  }`}
-                >
-                  <MapPin size={18} />
-                  <span>Map</span>
-                </button>
-              </div>
+              <ViewModeToggle
+                viewMode={viewMode}
+                onViewModeChange={handleViewModeChange}
+              />
               
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-600">Sort by:</span>
-                <select 
-                  value={sortBy}
-                  onChange={(e) => handleSortChange(e.target.value)}
-                  className="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 shadow-sm"
-                >
-                  <option value="relevance">Relevance</option>
-                  <option value="rating">Rating</option>
-                  <option value="reviews">Review Count</option>
-                  <option value="distance">Distance</option>
-                  <option value="priceAsc">Price: Low to High</option>
-                  <option value="priceDesc">Price: High to Low</option>
-                </select>
-              </div>
+              <SortingControl
+                sortBy={sortBy}
+                onSortChange={setSortBy}
+              />
             </div>
             
             <div className="grid gap-8 lg:grid-cols-4">
@@ -423,21 +355,13 @@ const RestaurantList: React.FC = () => {
                 ) : null}
                 
                 {filteredRestaurants.length > 0 ? (
-                  <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                    {filteredRestaurants.map((restaurant) => (
-                      <RestaurantCard
-                        key={restaurant.id}
-                        restaurant={restaurant}
-                        isFavorite={isFavorite(restaurant.id)}
-                        onFavoriteToggle={toggleFavorite}
-                      />
-                    ))}
-                  </div>
+                  <RestaurantGrid 
+                    restaurants={filteredRestaurants}
+                    isFavorite={isFavorite}
+                    onFavoriteToggle={toggleFavorite}
+                  />
                 ) : (
-                  <div className="rounded-lg border border-gray-200 bg-white p-8 text-center">
-                    <h3 className="mb-2 text-lg font-medium text-gray-900">No restaurants found</h3>
-                    <p className="text-gray-600">Try adjusting your filters or selecting a different city.</p>
-                  </div>
+                  <NoRestaurantsFound />
                 )}
               </div>
             </div>
@@ -451,4 +375,3 @@ const RestaurantList: React.FC = () => {
 };
 
 export default RestaurantList;
-
