@@ -36,6 +36,20 @@ const RestaurantCard: React.FC<RestaurantCardProps> = ({
     const imageSize = '/800x600';
     const baseUrl = 'https://images.pexels.com/photos';
     
+    if (city === 'chandigarh') {
+      if (restaurantName.includes('gopal')) {
+        return `${baseUrl}/1639562/pexels-photo-1639562.jpeg?auto=compress&cs=tinysrgb&w=800&h=600`;
+      } else if (restaurantName.includes('pal dhaba') || restaurantName.includes('dhaba')) {
+        return `${baseUrl}/2741448/pexels-photo-2741448.jpeg?auto=compress&cs=tinysrgb&w=800&h=600`;
+      } else if (restaurantName.includes('punjab grill')) {
+        return `${baseUrl}/2233729/pexels-photo-2233729.jpeg?auto=compress&cs=tinysrgb&w=800&h=600`;
+      } else if (restaurantName.includes('saffron')) {
+        return `${baseUrl}/958545/pexels-photo-958545.jpeg?auto=compress&cs=tinysrgb&w=800&h=600`;
+      } else {
+        return `${baseUrl}/2474658/pexels-photo-2474658.jpeg?auto=compress&cs=tinysrgb&w=800&h=600`;
+      }
+    }
+    
     if (cuisine.includes('north indian') || restaurantName.includes('punjabi')) {
       return `${baseUrl}/2474658/pexels-photo-2474658.jpeg?auto=compress&cs=tinysrgb&w=800&h=600`;
     } else if (cuisine.includes('south indian') || restaurantName.includes('dosa')) {
@@ -46,14 +60,14 @@ const RestaurantCard: React.FC<RestaurantCardProps> = ({
       return `${baseUrl}/1624487/pexels-photo-1624487.jpeg?auto=compress&cs=tinysrgb&w=800&h=600`;
     } else if (cuisine.includes('street food')) {
       return `${baseUrl}/3926135/pexels-photo-3926135.jpeg?auto=compress&cs=tinysrgb&w=800&h=600`;
-    } else if (city === 'mumbai' || city === 'pune') {
+    }
+    
+    if (city === 'mumbai' || city === 'pune') {
       return `${baseUrl}/2474661/pexels-photo-2474661.jpeg?auto=compress&cs=tinysrgb&w=800&h=600`;
     } else if (city === 'delhi' || city === 'new delhi') {
       return `${baseUrl}/2313686/pexels-photo-2313686.jpeg?auto=compress&cs=tinysrgb&w=800&h=600`;
     } else if (city === 'bangalore') {
       return `${baseUrl}/3338681/pexels-photo-3338681.jpeg?auto=compress&cs=tinysrgb&w=800&h=600`;
-    } else if (city === 'chandigarh') {
-      return `${baseUrl}/2474658/pexels-photo-2474658.jpeg?auto=compress&cs=tinysrgb&w=800&h=600`;
     } else if (city === 'agra') {
       return `${baseUrl}/3683307/pexels-photo-3683307.jpeg?auto=compress&cs=tinysrgb&w=800&h=600`;
     } else if (city === 'jaipur') {

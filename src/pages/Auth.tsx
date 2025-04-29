@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Eye, EyeOff, Loader2, CheckCircle } from 'lucide-react';
@@ -27,8 +28,13 @@ const Auth: React.FC = () => {
   
   // Redirect if already authenticated
   useEffect(() => {
+    // Get the return URL from localStorage if available
+    const returnUrl = localStorage.getItem('returnUrl') || '/';
+    
     if (user) {
-      navigate('/');
+      // Remove the returnUrl from localStorage after successful login
+      localStorage.removeItem('returnUrl');
+      navigate(returnUrl);
     }
     
     // Check for authentication hash from magic link or OAuth
@@ -40,7 +46,8 @@ const Auth: React.FC = () => {
         if (error) {
           toast.error(error.message);
         } else if (data?.session) {
-          navigate('/');
+          localStorage.removeItem('returnUrl');
+          navigate(returnUrl);
         }
         setIsLoading(false);
       }
@@ -94,10 +101,19 @@ const Auth: React.FC = () => {
   const handleSocialAuth = async (provider: 'google' | 'facebook') => {
     try {
       setIsLoading(true);
+      
+      // Save the current path to redirect back after login
+      const returnUrl = location.state?.from || '/';
+      localStorage.setItem('returnUrl', returnUrl);
+      
       const { error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
-          redirectTo: `${window.location.origin}/auth`
+          redirectTo: `${window.location.origin}/auth`,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          }
         }
       });
       

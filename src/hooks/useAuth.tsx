@@ -29,13 +29,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     // First set up the auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      (event, session) => {
+        // Handle auth state changes
         setSession(session);
         
         if (session?.user) {
-          await fetchUserProfile(session.user.id);
+          // Defer fetching user profile to avoid potential infinite loops
+          setTimeout(() => {
+            fetchUserProfile(session.user.id);
+          }, 0);
         } else {
           setUser(null);
+          setFavorites([]);
         }
       }
     );
@@ -96,8 +101,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       };
       
       setUser(appUser);
+      setIsLoading(false);
     } catch (error) {
       console.error('Error fetching user profile:', error);
+      setIsLoading(false);
     }
   };
   
@@ -162,7 +169,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // Toggle restaurant favorite status
   const toggleFavorite = async (restaurantId: string) => {
     if (!user) {
+      // Store the current page URL to redirect back after login
+      const currentPath = window.location.pathname;
+      localStorage.setItem('returnUrl', currentPath);
+      
       toast.error('You must be logged in to add favorites');
+      window.location.href = '/auth';
       return;
     }
     
