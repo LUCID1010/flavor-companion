@@ -96,7 +96,20 @@ const SearchBar: React.FC<SearchBarProps> = ({
             "flex-1 bg-transparent py-2 pl-2 pr-4 text-gray-900 placeholder-gray-400 outline-none",
             isLarge ? "md:py-3 md:text-lg" : ""
           )}
+          list="indian-cities"
         />
+        <datalist id="indian-cities">
+          <option value="Chandigarh" />
+          <option value="Mumbai" />
+          <option value="New Delhi" />
+          <option value="Bangalore" />
+          <option value="Pune" />
+          <option value="Agra" />
+          <option value="Chennai" />
+          <option value="Lucknow" />
+          <option value="Jaipur" />
+          <option value="Hyderabad" />
+        </datalist>
       </div>
 
       {showButton && (

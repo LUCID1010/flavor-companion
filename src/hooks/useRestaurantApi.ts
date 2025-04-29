@@ -1,3 +1,4 @@
+
 import { useQuery } from "@tanstack/react-query";
 import { 
   fetchLanguages, 
@@ -59,9 +60,11 @@ export const useRestaurantsByCity = (city?: string) => {
     queryKey: ['restaurants-by-city', city],
     queryFn: () => {
       const allRestaurants = getAllZomatoRestaurants();
-      // Filter to only Indian restaurants
+      // Filter to only Indian restaurants, excluding San Francisco and Singapore
       const indianRestaurants = allRestaurants.filter(restaurant => 
-        ['Chandigarh', 'Mumbai', 'New Delhi', 'Bangalore', 'Pune', 'Agra', 'Chennai', 'Lucknow', 'Jaipur'].includes(restaurant.city)
+        ['Chandigarh', 'Mumbai', 'New Delhi', 'Bangalore', 'Pune', 'Agra', 'Chennai', 'Lucknow', 'Jaipur', 'Hyderabad'].includes(restaurant.city) &&
+        restaurant.city !== 'San Francisco' &&
+        restaurant.city !== 'Singapore'
       );
       
       if (!city || city === 'All') {
@@ -80,9 +83,11 @@ export const useTopRatedRestaurants = (limit: number = 10) => {
     queryKey: ['top-rated-restaurants', limit],
     queryFn: () => {
       const allRestaurants = getAllZomatoRestaurants();
-      // Filter to only Indian restaurants
+      // Filter to only Indian restaurants, excluding San Francisco and Singapore
       const indianRestaurants = allRestaurants.filter(restaurant => 
-        ['Chandigarh', 'Mumbai', 'New Delhi', 'Bangalore', 'Pune', 'Agra', 'Chennai', 'Lucknow', 'Jaipur'].includes(restaurant.city)
+        ['Chandigarh', 'Mumbai', 'New Delhi', 'Bangalore', 'Pune', 'Agra', 'Chennai', 'Lucknow', 'Jaipur', 'Hyderabad'].includes(restaurant.city) &&
+        restaurant.city !== 'San Francisco' &&
+        restaurant.city !== 'Singapore'
       );
       
       return indianRestaurants
@@ -100,13 +105,15 @@ export const useRestaurantsGroupedByCity = () => {
     queryKey: ['restaurants-grouped-by-city'],
     queryFn: () => {
       const allRestaurants = getAllZomatoRestaurants();
-      // Filter to only Indian restaurants
+      // Filter to only Indian restaurants, excluding San Francisco and Singapore
       const indianRestaurants = allRestaurants.filter(restaurant => 
-        ['Chandigarh', 'Mumbai', 'New Delhi', 'Bangalore', 'Pune', 'Agra', 'Chennai', 'Lucknow', 'Jaipur'].includes(restaurant.city)
+        ['Chandigarh', 'Mumbai', 'New Delhi', 'Bangalore', 'Pune', 'Agra', 'Chennai', 'Lucknow', 'Jaipur', 'Hyderabad'].includes(restaurant.city) &&
+        restaurant.city !== 'San Francisco' &&
+        restaurant.city !== 'Singapore'
       );
       
       // Sort cities alphabetically but ensure our targeted Indian cities come first
-      const targetCities = ['Chandigarh', 'Mumbai', 'New Delhi', 'Bangalore', 'Pune', 'Agra', 'Chennai', 'Lucknow', 'Jaipur'];
+      const targetCities = ['Chandigarh', 'Mumbai', 'New Delhi', 'Bangalore', 'Pune', 'Agra', 'Chennai', 'Lucknow', 'Jaipur', 'Hyderabad'];
       const cities = [...new Set(indianRestaurants.map(r => r.city))];
       const sortedCities = [...targetCities.filter(city => cities.includes(city))];
       

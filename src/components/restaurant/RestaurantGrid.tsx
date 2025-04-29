@@ -15,21 +15,23 @@ const RestaurantGrid: React.FC<RestaurantGridProps> = ({
   isFavorite,
   onFavoriteToggle,
 }) => {
-  // Define Indian cities and explicitly exclude San Francisco
+  // Define Indian cities and explicitly exclude San Francisco and Singapore
   const indianCities = ['Chandigarh', 'Mumbai', 'New Delhi', 'Bangalore', 'Pune', 'Agra', 'Chennai', 'Lucknow', 'Jaipur', 'Hyderabad'];
   
-  // Filter out non-Indian cities and explicitly check for and exclude "San Francisco"
-  const indianRestaurants = restaurants.filter(restaurant => 
-    indianCities.includes(restaurant.city) && restaurant.city !== 'San Francisco'
+  // Filter out San Francisco, Singapore, and non-Indian cities
+  const filteredRestaurants = restaurants.filter(restaurant => 
+    indianCities.includes(restaurant.city) &&
+    restaurant.city !== 'San Francisco' &&
+    restaurant.city !== 'Singapore'
   );
 
-  if (indianRestaurants.length === 0) {
+  if (filteredRestaurants.length === 0) {
     return <NoRestaurantsFound />;
   }
 
   return (
     <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-      {indianRestaurants.map((restaurant) => (
+      {filteredRestaurants.map((restaurant) => (
         <RestaurantCard
           key={restaurant.id}
           restaurant={restaurant}
